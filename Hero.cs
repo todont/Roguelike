@@ -21,23 +21,26 @@ namespace Roguelike
             switch (key)
             {
                 case 'w':
-                    if (location.AsciiView[Coords.X][Coords.Y + 1] != '#')
-                        ++Coords.Y;
+                    if (location.AsciiView[Coords.Y - 1][Coords.X] != '#')
+                        --Coords.Y;
+                    else Move(location);
                     break;
                 case 's':
-                    if (location.AsciiView[Coords.X][Coords.Y - 1] != '#')
-                        --Coords.Y;
+                    if (location.AsciiView[Coords.Y + 1][Coords.X] != '#')
+                        ++Coords.Y;
+                    else Move(location);
                     break;
                 case 'a':
-                    if (location.AsciiView[Coords.X - 1][Coords.Y] != '#')
+                    if (location.AsciiView[Coords.Y][Coords.X - 1] != '#')
                         --Coords.X;
+                    else Move(location);
                     break;
                 case 'd':
-                    if (location.AsciiView[Coords.X + 1][Coords.Y] != '#')
+                    if (location.AsciiView[Coords.Y][Coords.X + 1] != '#')
                         ++Coords.X;
+                    else Move(location);
                     break;
             }
-
         }
     }
 }

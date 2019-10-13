@@ -16,8 +16,8 @@ namespace Roguelike
             location.Draw(hero);
             while (true)
             {
-                //hero.Move();
-                //location.Redraw();
+                hero.Move(location);
+                location.Redraw(hero);
             }
         }
     }
