@@ -10,13 +10,14 @@ namespace Roguelike
     {
         public void StartGame()
         {
+            //здесь должны быть настройки, lastVisitedLocation ??
             Location location = new Location();
-            location.Draw();
 	        Hero hero = new Hero();
+            location.Draw(hero);
             while (true)
             {
-                hero.Move(); 
-                location.Redraw();
+                //hero.Move();
+                //location.Redraw();
             }
         }
     }
