@@ -8,6 +8,36 @@ namespace Roguelike
 {
     class Hero
     {
-        Point heroCoords = new Point(1, 1);   
+        public Point Coords { get; set; }
+
+        public Hero()
+        {
+            Coords = new Point(10, 10);
+        }
+
+        public void Move(Location location)
+        {
+            var key = Console.ReadKey(true).KeyChar;
+            switch (key)
+            {
+                case 'w':
+                    if (location.AsciiView[Coords.X][Coords.Y + 1] != '#')
+                        ++Coords.Y;
+                    break;
+                case 's':
+                    if (location.AsciiView[Coords.X][Coords.Y - 1] != '#')
+                        --Coords.Y;
+                    break;
+                case 'a':
+                    if (location.AsciiView[Coords.X - 1][Coords.Y] != '#')
+                        --Coords.X;
+                    break;
+                case 'd':
+                    if (location.AsciiView[Coords.X + 1][Coords.Y] != '#')
+                        ++Coords.X;
+                    break;
+            }
+
+        }
     }
 }
