@@ -11,6 +11,7 @@ namespace Roguelike
     {
         //private string LastVisitedLocation = "location1";
         public readonly string[] AsciiView = File.ReadAllLines($"Locations/location1.txt");
+        private Point PrevCoords;
         public void Draw(Hero hero)
         {
             Console.CursorVisible = false;
@@ -20,6 +21,16 @@ namespace Roguelike
                 Console.WriteLine(AsciiView[i]);
             Console.SetCursorPosition(hero.Coords.X, hero.Coords.Y);
             Console.Write("@");
+            PrevCoords = new Point(hero.Coords.X, hero.Coords.Y);
+        }
+
+        public void Redraw(Hero hero)
+        {
+            Console.SetCursorPosition(hero.Coords.X, hero.Coords.Y);
+            Console.Write("@");
+            Console.SetCursorPosition(PrevCoords.X, PrevCoords.Y);
+            Console.Write(".");
+            PrevCoords = new Point(hero.Coords.X, hero.Coords.Y);
         }
     }
 }
