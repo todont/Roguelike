@@ -14,6 +14,7 @@ namespace Roguelike
         private Point PrevCoords;
         public void Draw(Hero hero)
         {
+            Console.Clear();
             Console.CursorVisible = false;
             //Console.SetWindowSize();
             //string[] locationArr = File.ReadAllLines($"Locations/{LastVisitedLocation}.txt");
