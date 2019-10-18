@@ -8,16 +8,51 @@ namespace Roguelike
 {
     class GameEngine
     {
-        public void StartGame()
+        private Hero hero;
+        enum Action
         {
-            //здесь должны быть настройки, lastVisitedLocation ??
-            Location location = new Location();
-	        Hero hero = new Hero();
-            location.Draw(hero);
+
+        }
+
+        private void Init()
+        {
+
+        }
+
+        private void Input()
+        {
+            var action = (Action)Console.ReadKey(true).KeyChar;
+        }
+
+        private void Logic()
+        {
+
+        }
+
+        private void Redraw()
+        {
+
+        }
+
+        private void Draw()
+        {
+
+        }
+
+        public void StartMenu()
+        {
+
+        }
+
+        public void PlayGame()
+        {
+            Init();
+            Draw();
             while (true)
             {
-                hero.Move(location);
-                location.Redraw(hero);
+                Input();
+                Logic();
+                Redraw();
             }
         }
     }

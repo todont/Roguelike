@@ -11,7 +11,8 @@ namespace Roguelike
         static void Main(string[] args)
         {
             GameEngine gameEngine = new GameEngine();
-            gameEngine.StartGame();
+            gameEngine.StartMenu();
+            //gameEngine.StartGame();
         }
     }
 }
