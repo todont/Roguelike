@@ -86,7 +86,9 @@ namespace Roguelike
 
         public void StartMenu()
         {
-
+            Menu menu = new Menu();
+            string selected = menu.Process();
+            if (selected == "New Game") PlayGame();
         }
 
         public void PlayGame()
