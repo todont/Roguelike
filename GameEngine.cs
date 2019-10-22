@@ -9,9 +9,16 @@ namespace Roguelike
     class GameEngine
     {
         private Hero hero;
-        enum Action
+        private bool GameOver = false;
+        public enum Action
         {
-
+            MoveUp = ConsoleKey.UpArrow,
+            MoveDown = ConsoleKey.DownArrow,
+            MoveRight = ConsoleKey.RightArrow,
+            MoveLeft = ConsoleKey.LeftArrow,
+            OpenInventory = ConsoleKey.E,
+            Confirm = ConsoleKey.Enter,
+            PickUpItem = ConsoleKey.G,
         }
 
         private void Init()
@@ -21,7 +28,14 @@ namespace Roguelike
 
         private void Input()
         {
-            var action = (Action)Console.ReadKey(true).KeyChar;
+            var action = (Action)Console.ReadKey(true).Key;
+            Console.WriteLine(action);
+            switch (action)
+            {
+                case Action.MoveUp:
+                    break;
+
+            }
         }
 
         private void Logic()
@@ -41,14 +55,14 @@ namespace Roguelike
 
         public void StartMenu()
         {
-
+            Input();
         }
 
         public void PlayGame()
         {
             Init();
             Draw();
-            while (true)
+            while (!GameOver)
             {
                 Input();
                 Logic();
