@@ -9,29 +9,13 @@ namespace Roguelike
 {
     class Location
     {
-        //private string LastVisitedLocation = "location1";
-        public readonly string[] AsciiView = File.ReadAllLines($"Locations/location1.txt");
-        private Point HeroPrevCoords;
-        public void Draw(Hero hero)
-        {
-            Console.Clear();
-            Console.CursorVisible = false;
-            //Console.SetWindowSize();
-            //string[] locationArr = File.ReadAllLines($"Locations/{LastVisitedLocation}.txt");
-            for (int i = 0; i < AsciiView.Length; i++)
-                Console.WriteLine(AsciiView[i]);
-            Console.SetCursorPosition(hero.Coords.X, hero.Coords.Y);
-            Console.Write("@");
-            HeroPrevCoords = new Point(hero.Coords.X, hero.Coords.Y);
-        }
-
         public void Redraw(Hero hero)
         {
             Console.SetCursorPosition(hero.Coords.X, hero.Coords.Y);
             Console.Write("@");
-            Console.SetCursorPosition(HeroPrevCoords.X, HeroPrevCoords.Y);
+            //Console.SetCursorPosition(HeroPrevCoords.X, HeroPrevCoords.Y);
             Console.Write(".");
-            HeroPrevCoords = new Point(hero.Coords.X, hero.Coords.Y);
+            //HeroPrevCoords = new Point(hero.Coords.X, hero.Coords.Y);
         }
     }
 }

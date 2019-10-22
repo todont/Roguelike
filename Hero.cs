@@ -1,46 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Roguelike
-{
-    class Hero
-    {
-        public Point Coords { get; set; }
-
-        public Hero()
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Roguelike
+{
+    class Hero
+    {
+        public Point Coords { get; set; }
+        public Point PrevCoords { get; set; }
+        public GameEngine.Action CurrentAction { get; set; }
+        enum Direction
+        {
+            Up = 'w',
+            Down = 's',
+            Left ='a',
+            Right = 'd'
+        }
+
+        public void MoveUp()
         {
-            Coords = new Point(10, 10);
-        }
-
-        public void Move(Location location)
+            --Coords.Y;
+        }
+
+        public void MoveDown()
         {
-            var key = Console.ReadKey(true).KeyChar;
-            switch (key)
-            {
-                case 'w':
-                    if (location.AsciiView[Coords.Y - 1][Coords.X] != '#')
-                        --Coords.Y;
-                    else Move(location);
-                    break;
-                case 's':
-                    if (location.AsciiView[Coords.Y + 1][Coords.X] != '#')
-                        ++Coords.Y;
-                    else Move(location);
-                    break;
-                case 'a':
-                    if (location.AsciiView[Coords.Y][Coords.X - 1] != '#')
-                        --Coords.X;
-                    else Move(location);
-                    break;
-                case 'd':
-                    if (location.AsciiView[Coords.Y][Coords.X + 1] != '#')
-                        ++Coords.X;
-                    else Move(location);
-                    break;
-            }
-        }
-    }
-}
+            ++Coords.Y;
+        }
+
+        public void MoveLeft()
+        {
+            --Coords.X;
+        }
+
+        public void MoveRight()
+        {
+            ++Coords.X;
+        }
+    }
+}
