@@ -11,13 +11,6 @@ namespace Roguelike
         public Point Coords { get; set; }
         public Point PrevCoords { get; set; }
         public GameEngine.Action CurrentAction { get; set; }
-        enum Direction
-        {
-            Up = 'w',
-            Down = 's',
-            Left ='a',
-            Right = 'd'
-        }
 
         public void MoveUp()
         {
