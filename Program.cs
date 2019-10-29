@@ -10,6 +10,7 @@ namespace Roguelike
     {
         static void Main(string[] args)
         {
+            Console.CursorVisible = false;
             GameEngine gameEngine = new GameEngine();
             gameEngine.StartMenu();
             //gameEngine.StartGame();
