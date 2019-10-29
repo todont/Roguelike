@@ -13,16 +13,8 @@ namespace Roguelike
         private Hero CurrentHero = new Hero();
         private bool GameOver = false;
         private string[] Map;
-        public enum Action
-        {
-            MoveUp = ConsoleKey.UpArrow,
-            MoveDown = ConsoleKey.DownArrow,
-            MoveRight = ConsoleKey.RightArrow,
-            MoveLeft = ConsoleKey.LeftArrow,
-            OpenInventory = ConsoleKey.E,
-            Confirm = ConsoleKey.Enter,
-            PickUpItem = ConsoleKey.G,
-        }
+        private const int OffsetX = 20;
+        private const int OffsetY = 8;
 
         private void Init()
         {
@@ -30,11 +22,15 @@ namespace Roguelike
             Map = File.ReadAllLines($"Locations/location1.txt");
             CurrentHero.Coords = new Point(10, 10);
             CurrentHero.PrevCoords = new Point(10, 10);
+            CurrentHero.HitPoints = 15; //should depend on class/hit dices
+            CurrentHero.HpPoints = 0;
+            CurrentHero.CurrentSpeed = Character.Speed.High;
+            CurrentHero.Name = "Chiks-Chiriks";
         }
 
         private void Input()
         {
-            var action = (Action)Console.ReadKey(true).Key;
+            var action = (Character.Action)Console.ReadKey(true).Key;
             CurrentHero.CurrentAction = action;
         }
 
@@ -44,31 +40,41 @@ namespace Roguelike
             CurrentHero.PrevCoords.Y = CurrentHero.Coords.Y;
             switch (CurrentHero.CurrentAction)
             {
-                case Action.MoveUp:
-                        CurrentHero.MoveUp();
+                case Character.Action.MoveUp:
+                    CurrentHero.MoveUp();
                     break;
-                case Action.MoveDown:
-                        CurrentHero.MoveDown();
+                case Character.Action.MoveDown:
+                    CurrentHero.MoveDown();
                     break;
-                case Action.MoveLeft:
-                        CurrentHero.MoveLeft();
+                case Character.Action.MoveLeft:
+                    CurrentHero.MoveLeft();
                     break;
-                case Action.MoveRight:
-                        CurrentHero.MoveRight();
-                    break;            
+                case Character.Action.MoveRight:
+                    CurrentHero.MoveRight();
+                    break;
             }
-            if (Map[CurrentHero.Coords.Y][CurrentHero.Coords.X] == '#')
+            switch (Map[CurrentHero.Coords.Y][CurrentHero.Coords.X])
             {
-                CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
-                CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
+                case '#':
+                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
+                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
+                    //TODO: make this as log function that depends on symbol we switching
+                    Console.SetCursorPosition(0, 0);
+                    Console.WriteLine("You hit a wall!");
+                    //break out of loop
+                    break;
+                default:
+                    //TODO: make this as log function that depends on symbol we switching
+                    Console.SetCursorPosition(0, 0);
+                    Console.WriteLine(new string(' ', 60));
+                    break;
             }
         }
-
         private void Redraw()
         {
-            Console.SetCursorPosition(CurrentHero.Coords.X, CurrentHero.Coords.Y);
+            Console.SetCursorPosition(CurrentHero.Coords.X + OffsetX, CurrentHero.Coords.Y + OffsetY);
             Console.Write("@");
-            Console.SetCursorPosition(CurrentHero.PrevCoords.X, CurrentHero.PrevCoords.Y);
+            Console.SetCursorPosition(CurrentHero.PrevCoords.X + OffsetX, CurrentHero.PrevCoords.Y + OffsetY);
             Console.Write(Map[CurrentHero.PrevCoords.Y][CurrentHero.PrevCoords.X]);
         }
 
@@ -79,8 +85,11 @@ namespace Roguelike
             //Console.SetWindowSize();
             //string[] locationArr = File.ReadAllLines($"Locations/{LastVisitedLocation}.txt");
             for (int i = 0; i < Map.Length; i++)
+            {
+                Console.SetCursorPosition(OffsetX, OffsetY + i);
                 Console.WriteLine(Map[i]);
-            Console.SetCursorPosition(CurrentHero.Coords.X, CurrentHero.Coords.Y);
+            }
+            Console.SetCursorPosition(CurrentHero.Coords.X + OffsetX, CurrentHero.Coords.Y + OffsetY);
             Console.Write("@");
         }
 
