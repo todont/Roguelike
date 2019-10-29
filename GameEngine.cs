@@ -52,7 +52,11 @@ namespace Roguelike
                 case Character.Action.MoveRight:
                     CurrentHero.MoveRight();
                     break;
+                 case Character.Action.Esc:
+                    StartMenu();
+                    break;
             }
+          
             switch (Map[CurrentHero.Coords.Y][CurrentHero.Coords.X])
             {
                 case '#':
@@ -81,7 +85,6 @@ namespace Roguelike
         private void Draw()
         {
             Console.Clear();
-            Console.CursorVisible = false;
             //Console.SetWindowSize();
             //string[] locationArr = File.ReadAllLines($"Locations/{LastVisitedLocation}.txt");
             for (int i = 0; i < Map.Length; i++)

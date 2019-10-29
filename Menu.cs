@@ -5,72 +5,57 @@ namespace Roguelike
 { 
     public class Menu
     {
-        private int CurIndex = 0;
-        private List<string> menuItem = new List<string>()
+        private List<string> MenuItem = new List<string>()
         {
                 "Resume",
                 "New Game",
                 "Settings",
                 "Exit"
         };
+        private int CurIndex = 0;
+        private int Count;
 
-        private void CheckKey(ConsoleKey key)
+        private bool CheckKey(ConsoleKey key)
         {
             if (key == ConsoleKey.DownArrow)
             {
-                if (CurIndex == menuItem.Count - 1) CurIndex = 0;
+                if (CurIndex == Count - 1) CurIndex = 0;
                 else CurIndex++;
             }
             else if (key == ConsoleKey.UpArrow)
             {
-                if (CurIndex == 0) CurIndex = menuItem.Count - 1;
+                if (CurIndex == 0) CurIndex = Count - 1;
                 else CurIndex--;
             }
-            else if (key == ConsoleKey.Enter)
-            {
-
-            }
+            else if (key == ConsoleKey.Enter) return true;
+            return false;
         }
 
         public string Process()
         {
+            Count = MenuItem.Count;
             while (true)
             {
                 Console.Clear();
                 Console.ResetColor();
-                for (int i = 0; i < menuItem.Count; i++)
+                int width = Console.WindowWidth;
+                int height = Console.WindowHeight;
+
+                for (int i = 0; i < Count; i++)
                 {
-                    Console.SetCursorPosition((Console.WindowWidth - 
-                                               menuItem[i].Length) / 2, i);
+                    Console.SetCursorPosition((width - MenuItem[i].Length) / 2,
+                                              (height - Count) / 2 + i);
+
                     if (i == CurIndex)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Black;
                         Console.ForegroundColor = ConsoleColor.Green;
-
-                    }
                     else
-                    {
                         Console.ResetColor();
-                    }
-                    Console.WriteLine(menuItem[i]);
+
+                    Console.WriteLine(MenuItem[i]);
                 }
 
-                var key = (GameEngine.Action)Console.ReadKey(true).Key;
-
-                if (key == GameEngine.Action.MoveDown)
-                {
-                    if (CurIndex == menuItem.Count - 1) CurIndex = 0;
-                    else CurIndex++;
-                }
-                else if (key == GameEngine.Action.MoveUp)
-                {
-                    if (CurIndex == 0) CurIndex = menuItem.Count - 1;
-                    else CurIndex--;
-                }
-                else if (key == GameEngine.Action.Confirm)
-                {
-                    return menuItem[CurIndex];
-                }
+                var key = Console.ReadKey(true).Key;
+                if (CheckKey(key) == true) return MenuItem[CurIndex];
             }
         }
     }
