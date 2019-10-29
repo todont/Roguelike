@@ -52,7 +52,7 @@ namespace Roguelike
                 case Character.Action.MoveRight:
                     CurrentHero.MoveRight();
                     break;
-                 case Character.Action.Esc:
+                 case Character.Action.Exit: //rename
                     StartMenu();
                     break;
             }
