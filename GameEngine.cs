@@ -22,6 +22,7 @@ namespace Roguelike
             OpenInventory = ConsoleKey.E,
             Confirm = ConsoleKey.Enter,
             PickUpItem = ConsoleKey.G,
+            Esc = ConsoleKey.Escape
         }
 
         private void Init()
@@ -45,17 +46,20 @@ namespace Roguelike
             switch (CurrentHero.CurrentAction)
             {
                 case Action.MoveUp:
-                        CurrentHero.MoveUp();
+                    CurrentHero.MoveUp();
                     break;
                 case Action.MoveDown:
-                        CurrentHero.MoveDown();
+                    CurrentHero.MoveDown();
                     break;
                 case Action.MoveLeft:
-                        CurrentHero.MoveLeft();
+                    CurrentHero.MoveLeft();
                     break;
                 case Action.MoveRight:
-                        CurrentHero.MoveRight();
-                    break;            
+                    CurrentHero.MoveRight();
+                    break;
+                case Action.Esc:
+                    StartMenu();
+                    break;
             }
             if (Map[CurrentHero.Coords.Y][CurrentHero.Coords.X] == '#')
             {
@@ -75,7 +79,6 @@ namespace Roguelike
         private void Draw()
         {
             Console.Clear();
-            Console.CursorVisible = false;
             //Console.SetWindowSize();
             //string[] locationArr = File.ReadAllLines($"Locations/{LastVisitedLocation}.txt");
             for (int i = 0; i < Map.Length; i++)
