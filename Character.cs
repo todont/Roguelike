@@ -18,6 +18,7 @@ namespace Roguelike
             OpenInventory = ConsoleKey.E,
             Confirm = ConsoleKey.Enter,
             PickUpItem = ConsoleKey.G,
+            Exit = ConsoleKey.Escape
         }
 
         public string Name { get; set; }
