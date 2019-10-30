@@ -34,10 +34,8 @@ namespace Roguelike
             CurrentHero.CurrentAction = action;
         }
 
-        private void Logic()
+        private void ParseHeroAction()
         {
-            CurrentHero.PrevCoords.X = CurrentHero.Coords.X;
-            CurrentHero.PrevCoords.Y = CurrentHero.Coords.Y;
             switch (CurrentHero.CurrentAction)
             {
                 case Character.Action.MoveUp:
@@ -46,33 +44,59 @@ namespace Roguelike
                 case Character.Action.MoveDown:
                     CurrentHero.MoveDown();
                     break;
-                case Character.Action.MoveLeft:
+                case Character.Action.MoveRight:
                     CurrentHero.MoveLeft();
                     break;
-                case Character.Action.MoveRight:
+                case Character.Action.MoveLeft:
                     CurrentHero.MoveRight();
                     break;
-                 case Character.Action.Exit: //rename
+                case Character.Action.OpenInventory:
+                    //OpenInventory(Hero.Inventory)
+                    //Hero.Inventory is a list, containing many lists of
+                    //weapon, armor, potion and so on..
+                    break;
+                case Character.Action.Confirm:
+                    //if any kind of menu is showing to player right now,
+                    //parse this action. Otherwise break
+                    break;
+                case Character.Action.PickUpItem:
+                    //Hero.AddItem(Item)
+                    break;
+                case Character.Action.Exit:
                     StartMenu();
                     break;
             }
-          
+        }
+
+        private void ParseHeroCollisions()
+        {
             switch (Map[CurrentHero.Coords.Y][CurrentHero.Coords.X])
             {
+                //TODO: make this as log function that depends on symbol we switching
                 case '#':
                     CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
                     CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
-                    //TODO: make this as log function that depends on symbol we switching
                     Console.SetCursorPosition(0, 0);
                     Console.WriteLine("You hit a wall!");
-                    //break out of loop
                     break;
                 default:
-                    //TODO: make this as log function that depends on symbol we switching
                     Console.SetCursorPosition(0, 0);
                     Console.WriteLine(new string(' ', 60));
                     break;
             }
+        }
+        private void Logic()
+        {
+            CurrentHero.PrevCoords.X = CurrentHero.Coords.X;
+            CurrentHero.PrevCoords.Y = CurrentHero.Coords.Y;
+
+            ParseHeroAction();
+            ParseHeroCollisions();
+
+            //loop over all monsters (probably at a distance x from hero)
+            //ParseMonsterAction(MonsterId); //some kind of monster identificator
+            //ParseMonsterCollisions(MonsterId);
+
         }
         private void Redraw()
         {

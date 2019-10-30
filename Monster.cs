@@ -8,6 +8,7 @@ namespace Roguelike
 {
     class Monster : Character
     {
-
+        //Tile MonsterTile (color and shape of 
+        // symbol that represents monster)
     }
 }
