@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Roguelike
 {
@@ -13,12 +8,12 @@ namespace Roguelike
         private Hero CurrentHero = new Hero();
         private bool GameOver = false;
         private string[] Map;
-        private const int OffsetX = 40;
-        private const int OffsetY = 8;
+        //Remake offsets like class fields
+        private Point MapOffset;
+        private Point InfoOffset;
 
         private void Init()
         {
-            //Process proc = new Process();
             Map = File.ReadAllLines($"Locations/location1.txt");
             CurrentHero.Coords = new Point(10, 10);
             CurrentHero.PrevCoords = new Point(10, 10);
@@ -26,6 +21,35 @@ namespace Roguelike
             CurrentHero.ExpPoints = 0;
             CurrentHero.CurrentSpeed = Hero.Speed.High;
             CurrentHero.Name = "Chiks-Chiriks";
+        }
+
+        private void DrawAllBorders()
+        {
+            Rectangle mapBorder = new Rectangle
+            {
+                Width = Console.WindowWidth * 3 / 4,
+                Height = Console.WindowHeight * 4 / 5
+            };
+            mapBorder.Location = new Point(Console.WindowWidth - mapBorder.Width, 0);
+            MapOffset = new Point(mapBorder.Location.X + 1, mapBorder.Location.Y + 1);
+            DrawBorder(mapBorder);
+
+            Rectangle infoBorder = new Rectangle
+            {
+                Height = Console.WindowHeight - mapBorder.Height,
+                Width = Console.WindowWidth,
+                Location = new Point(0, mapBorder.Height)
+            };
+            InfoOffset = new Point(infoBorder.Location.X + 1, infoBorder.Location.Y + 1);
+            DrawBorder(infoBorder);
+
+            Rectangle heroInfoBorder = new Rectangle
+            {
+                Width = Console.WindowWidth - mapBorder.Width,
+                Height = mapBorder.Height,
+                Location = new Point(0, 0)
+            };
+            DrawBorder(heroInfoBorder);
         }
 
         private void Input()
@@ -56,24 +80,51 @@ namespace Roguelike
         }
         private void Redraw()
         {
-            Console.SetCursorPosition(CurrentHero.Coords.X + OffsetX, CurrentHero.Coords.Y + OffsetY);
+            Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
             Console.Write("@");
-            Console.SetCursorPosition(CurrentHero.PrevCoords.X + OffsetX, CurrentHero.PrevCoords.Y + OffsetY);
+            Console.SetCursorPosition(CurrentHero.PrevCoords.X + MapOffset.X, CurrentHero.PrevCoords.Y + MapOffset.Y);
             Console.Write(Map[CurrentHero.PrevCoords.Y][CurrentHero.PrevCoords.X]);
         }
 
         private void Draw()
         {
             Console.Clear();
-            //Console.SetWindowSize();
-            //string[] locationArr = File.ReadAllLines($"Locations/{LastVisitedLocation}.txt");
+            DrawAllBorders();
             for (int i = 0; i < Map.Length; i++)
             {
-                Console.SetCursorPosition(OffsetX, OffsetY + i);
+                Console.SetCursorPosition(MapOffset.X, MapOffset.Y + i);
                 Console.WriteLine(Map[i]);
             }
-            Console.SetCursorPosition(CurrentHero.Coords.X + OffsetX, CurrentHero.Coords.Y + OffsetY);
+            Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
             Console.Write("@");
+        }
+
+        private void DrawBorder(Rectangle border)
+        {
+            int width = border.Width;
+            int height = border.Height;
+            Point location = border.Location;
+            Console.SetCursorPosition(location.X, location.Y);
+            Console.Write("╔");
+            Console.SetCursorPosition(location.X + 1, location.Y);
+            Console.Write(new string('═', width - 2));
+            Console.SetCursorPosition(location.X + width - 1, location.Y);
+            Console.WriteLine("╗");
+            for (int i = 1; i < height - 1; i++)
+            {
+                Console.SetCursorPosition(location.X, location.Y + i);
+                Console.Write("║");
+                Console.SetCursorPosition(location.X + 1, location.Y + i);
+                Console.Write(new string(' ', width - 2));
+                Console.SetCursorPosition(location.X + width - 1, location.Y + i);
+                Console.WriteLine("║");
+            }
+            Console.SetCursorPosition(location.X, location.Y + height - 1);
+            Console.Write("╚");
+            Console.SetCursorPosition(location.X + 1, location.Y + height - 1);
+            Console.Write(new string('═', width - 2));
+            Console.SetCursorPosition(location.X + width - 1, location.Y + height - 1);
+            Console.Write("╝");
         }
 
         public void StartMenu()
@@ -81,6 +132,7 @@ namespace Roguelike
             Menu menu = new Menu();
             string selected = menu.Process();
             if (selected == "New Game") PlayGame();
+            if (selected == "Exit") Program.CleanUpAndExit();
         }
 
         public void PlayGame()
