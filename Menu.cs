@@ -5,29 +5,31 @@ namespace Roguelike
 { 
     public class Menu
     {
-        private List<string> MenuItem = new List<string>()
+        private List<string> MenuItem = new List<string>
         {
                 "Resume",
                 "New Game",
                 "Settings",
                 "Exit"
         };
-        private int CurIndex = 0;
+        private int CurIndex;
         private int Count;
 
         private bool CheckKey(ConsoleKey key)
         {
-            if (key == ConsoleKey.DownArrow)
+            switch(key)
             {
-                if (CurIndex == Count - 1) CurIndex = 0;
-                else CurIndex++;
+                case ConsoleKey.DownArrow:
+                    if (CurIndex == Count - 1) CurIndex = 0;
+                    else CurIndex++;
+                    break;
+                case ConsoleKey.UpArrow:
+                    if (CurIndex == 0) CurIndex = Count - 1;
+                    else CurIndex--;
+                    break;
+                case ConsoleKey.Enter:
+                    return true;
             }
-            else if (key == ConsoleKey.UpArrow)
-            {
-                if (CurIndex == 0) CurIndex = Count - 1;
-                else CurIndex--;
-            }
-            else if (key == ConsoleKey.Enter) return true;
             return false;
         }
 

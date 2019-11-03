@@ -18,7 +18,7 @@ namespace Roguelike
             CurrentHero.Coords = new Point(10, 10);
             CurrentHero.PrevCoords = new Point(10, 10);
             CurrentHero.HitPoints = 15; //should depend on class/hit dices
-            CurrentHero.HpPoints = 0;   
+            CurrentHero.HpPoints = 0;
             CurrentHero.CurrentSpeed = Character.Speed.High;
             CurrentHero.Name = "Chiks-Chiriks";
         }
@@ -108,8 +108,6 @@ namespace Roguelike
 
         private void Draw()
         {
-            //Console.SetWindowSize();
-            //string[] locationArr = File.ReadAllLines($"Locations/{LastVisitedLocation}.txt");
             Console.Clear();
             DrawAllBorders();
             for (int i = 0; i < Map.Length; i++)
@@ -127,7 +125,6 @@ namespace Roguelike
             int height = border.Height;
             Point location = border.Location;
             Console.SetCursorPosition(location.X, location.Y);
-            //Console.WriteLine($"{Console.WindowWidth} {Console.WindowHeight}");
             Console.Write("╔");
             Console.SetCursorPosition(location.X + 1, location.Y);
             Console.Write(new string('═', width - 2));
@@ -148,7 +145,6 @@ namespace Roguelike
             Console.Write(new string('═', width - 2));
             Console.SetCursorPosition(location.X + width - 1, location.Y + height - 1);
             Console.Write("╝");
-            //Console.W
         }
 
         public void StartMenu()
