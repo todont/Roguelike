@@ -13,7 +13,7 @@ namespace Roguelike
         private Hero CurrentHero = new Hero();
         private bool GameOver = false;
         private string[] Map;
-        private const int OffsetX = 20;
+        private const int OffsetX = 40;
         private const int OffsetY = 8;
 
         private void Init()
@@ -23,78 +23,34 @@ namespace Roguelike
             CurrentHero.Coords = new Point(10, 10);
             CurrentHero.PrevCoords = new Point(10, 10);
             CurrentHero.HitPoints = 15; //should depend on class/hit dices
-            CurrentHero.HpPoints = 0;
-            CurrentHero.CurrentSpeed = Character.Speed.High;
+            CurrentHero.ExpPoints = 0;
+            CurrentHero.CurrentSpeed = Hero.Speed.High;
             CurrentHero.Name = "Chiks-Chiriks";
         }
 
         private void Input()
         {
-            var action = (Character.Action)Console.ReadKey(true).Key;
-            CurrentHero.CurrentAction = action;
-        }
-
-        private void ParseHeroAction()
-        {
-            switch (CurrentHero.CurrentAction)
-            {
-                case Character.Action.MoveUp:
-                    CurrentHero.MoveUp();
-                    break;
-                case Character.Action.MoveDown:
-                    CurrentHero.MoveDown();
-                    break;
-                case Character.Action.MoveRight:
-                    CurrentHero.MoveLeft();
-                    break;
-                case Character.Action.MoveLeft:
-                    CurrentHero.MoveRight();
-                    break;
-                case Character.Action.OpenInventory:
-                    //OpenInventory(Hero.Inventory)
-                    //Hero.Inventory is a list, containing many lists of
-                    //weapon, armor, potion and so on..
-                    break;
-                case Character.Action.Confirm:
-                    //if any kind of menu is showing to player right now,
-                    //parse this action. Otherwise break
-                    break;
-                case Character.Action.PickUpItem:
-                    //Hero.AddItem(Item)
-                    break;
-                case Character.Action.Exit:
-                    StartMenu();
-                    break;
-            }
-        }
-
-        private void ParseHeroCollisions()
-        {
-            switch (Map[CurrentHero.Coords.Y][CurrentHero.Coords.X])
-            {
-                //TODO: make this as log function that depends on symbol we switching
-                case '#':
-                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
-                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
-                    Console.SetCursorPosition(0, 0);
-                    Console.WriteLine("You hit a wall!");
-                    break;
-                default:
-                    Console.SetCursorPosition(0, 0);
-                    Console.WriteLine(new string(' ', 60));
-                    break;
-            }
+            var key = Console.ReadKey(true).Key;
+            CurrentHero.CurrentMoveAction = (Hero.MoveAction)key;
+            CurrentHero.CurrentGameAction = (Hero.GameAction)key;
         }
         private void Logic()
         {
-            CurrentHero.PrevCoords.X = CurrentHero.Coords.X;
-            CurrentHero.PrevCoords.Y = CurrentHero.Coords.Y;
+            //if we in the menu, everything became different
+            //CurrentHero.DoMenuAction();
+            //else
 
-            ParseHeroAction();
-            ParseHeroCollisions();
+            if (CurrentHero.Move() == false)
+            {
+                CurrentHero.DoGameAction();
+                return;
+                //we do "return" here cause we don't need to redraw map
+                //in case hero don't move
+            }
+            CurrentHero.HandleCollisions(Map[CurrentHero.Coords.Y][CurrentHero.Coords.X]);
 
             //loop over all monsters (probably at a distance x from hero)
-            //ParseMonsterAction(MonsterId); //some kind of monster identificator
+            //MonsterId.Move; //some kind of monster identificator
             //ParseMonsterCollisions(MonsterId);
 
         }
@@ -137,7 +93,9 @@ namespace Roguelike
                 Logic();
                 if (CurrentHero.PrevCoords.X != CurrentHero.Coords.X
                 || CurrentHero.PrevCoords.Y != CurrentHero.Coords.Y)
-                    Redraw();
+                    Redraw(); 
+                    //need to Redraw() not only when PrevCoords!=Coords.
+                    //For example, if we just killed a monster
             }
         }
     }
