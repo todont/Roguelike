@@ -49,7 +49,7 @@
     <Compile Include="Hero.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="Monster.cs" />
-    <Compile Include="Point.cs" />
+    <Compile Include="Shapes.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Menu.cs" />
