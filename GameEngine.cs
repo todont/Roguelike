@@ -101,6 +101,7 @@ namespace Roguelike
             Menu menu = new Menu();
             string selected = menu.Process();
             if (selected == "New Game") PlayGame();
+            if (selected == "Exit") Program.CleanUpAndExit();
         }
 
         public void PlayGame()
