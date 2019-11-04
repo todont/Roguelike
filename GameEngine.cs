@@ -18,8 +18,8 @@ namespace Roguelike
             CurrentHero.Coords = new Point(10, 10);
             CurrentHero.PrevCoords = new Point(10, 10);
             CurrentHero.HitPoints = 15; //should depend on class/hit dices
-            CurrentHero.HpPoints = 0;
-            CurrentHero.CurrentSpeed = Character.Speed.High;
+            CurrentHero.ExpPoints = 0;
+            CurrentHero.CurrentSpeed = Hero.Speed.High;
             CurrentHero.Name = "Chiks-Chiriks";
         }
 
@@ -54,49 +54,29 @@ namespace Roguelike
 
         private void Input()
         {
-            var action = (Character.Action)Console.ReadKey(true).Key;
-            CurrentHero.CurrentAction = action;
+            var key = Console.ReadKey(true).Key;
+            CurrentHero.CurrentMoveAction = (Hero.MoveAction)key;
+            CurrentHero.CurrentGameAction = (Hero.GameAction)key;
         }
-
         private void Logic()
         {
-            CurrentHero.PrevCoords.X = CurrentHero.Coords.X;
-            CurrentHero.PrevCoords.Y = CurrentHero.Coords.Y;
-            switch (CurrentHero.CurrentAction)
-            {
-                case Character.Action.MoveUp:
-                    CurrentHero.MoveUp();
-                    break;
-                case Character.Action.MoveDown:
-                    CurrentHero.MoveDown();
-                    break;
-                case Character.Action.MoveLeft:
-                    CurrentHero.MoveLeft();
-                    break;
-                case Character.Action.MoveRight:
-                    CurrentHero.MoveRight();
-                    break;
-                case Character.Action.Exit: //rename
-                    StartMenu();
-                    break;
-            }
+            //if we in the menu, everything became different
+            //CurrentHero.DoMenuAction();
+            //else
 
-            switch (Map[CurrentHero.Coords.Y][CurrentHero.Coords.X])
+            if (CurrentHero.Move() == false)
             {
-                case '#':
-                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
-                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
-                    //TODO: make this as log function that depends on symbol we switching
-                    Console.SetCursorPosition(InfoOffset.X, InfoOffset.Y);
-                    Console.WriteLine("You hit a wall!");
-                    //break out of loop
-                    break;
-                default:
-                    //TODO: make this as log function that depends on symbol we switching
-                    Console.SetCursorPosition(InfoOffset.X, InfoOffset.Y);
-                    Console.WriteLine(new string(' ', 60));
-                    break;
+                CurrentHero.DoGameAction();
+                return;
+                //we do "return" here cause we don't need to redraw map
+                //in case hero don't move
             }
+            CurrentHero.HandleCollisions(Map[CurrentHero.Coords.Y][CurrentHero.Coords.X]);
+
+            //loop over all monsters (probably at a distance x from hero)
+            //MonsterId.Move; //some kind of monster identificator
+            //ParseMonsterCollisions(MonsterId);
+
         }
         private void Redraw()
         {
@@ -165,7 +145,9 @@ namespace Roguelike
                 Logic();
                 if (CurrentHero.PrevCoords.X != CurrentHero.Coords.X
                 || CurrentHero.PrevCoords.Y != CurrentHero.Coords.Y)
-                    Redraw();
+                    Redraw(); 
+                    //need to Redraw() not only when PrevCoords!=Coords.
+                    //For example, if we just killed a monster
             }
         }
     }
