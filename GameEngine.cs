@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CaveGenerator;
 
 namespace Roguelike
 {
@@ -10,7 +11,7 @@ namespace Roguelike
         //Remake offsets like class fields
         private Point MapOffset; //Coords of left top corner of MapBorder
         private Point InfoOffset;
-        private Map map = new Map();
+        private Cave Map = new Cave();
         //Maybe we will need it later
         public Rectangle HeroInfoBorder { get; set; }
         public Rectangle MapBorder { get; set; }
@@ -20,10 +21,12 @@ namespace Roguelike
 
         private void Init()
         {
-            map.Build();
+            Map.Build();
+            Map.ConnectCaves();
+            Map.WriteMapIntoFile();
             //Map = File.ReadAllLines($"Locations/location1.txt");
             //Обернуть код ниже в конструктор.
-            CurrentHero.Coords = new Point(10, 10);
+            CurrentHero.Coords = new Point(14, 10);
             CurrentHero.PrevCoords = new Point(10, 10);
             CurrentHero.HitPoints = 15; //should depend on class/hit dices
             CurrentHero.ExpPoints = 0;
@@ -83,7 +86,7 @@ namespace Roguelike
                 //we do "return" here cause we don't need to redraw map
                 //in case hero don't move
             }
-            CurrentHero.HandleCollisions(map.WorldAscii[CurrentHero.Coords.Y][CurrentHero.Coords.X]);
+            CurrentHero.HandleCollisions(Map.WorldAscii[CurrentHero.Coords.Y][CurrentHero.Coords.X]);
 
             //loop over all monsters (probably at a distance x from hero)
             //MonsterId.Move; //some kind of monster identificator
@@ -95,18 +98,18 @@ namespace Roguelike
             Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
             Console.Write("@");
             Console.SetCursorPosition(CurrentHero.PrevCoords.X + MapOffset.X, CurrentHero.PrevCoords.Y + MapOffset.Y);
-            Console.Write(map.WorldAscii[CurrentHero.PrevCoords.Y][CurrentHero.PrevCoords.X]);
+            Console.Write(Map.WorldAscii[CurrentHero.PrevCoords.Y][CurrentHero.PrevCoords.X]);
         }
 
         private void Draw()
         {
             Console.Clear();
             DrawAllBorders();
-            for (int i = 0; i < MapBorder.Height - 2 && i < map.WorldAscii.Length; i++)
+            for (int i = 0; i < MapBorder.Height - 2 && i < Map.WorldAscii.Length; i++)
             {
                 Console.SetCursorPosition(MapOffset.X, MapOffset.Y + i);
-                string mapstr = map.WorldAscii[i].Length > MapBorder.Width - 2 ?
-                 map.WorldAscii[i].Substring(0, MapBorder.Width - 2) : map.WorldAscii[i];  
+                string mapstr = Map.WorldAscii[i].Length > MapBorder.Width - 2 ?
+                 Map.WorldAscii[i].Substring(0, MapBorder.Width - 2) : Map.WorldAscii[i];  
                 Console.WriteLine(mapstr);
             }
             Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
