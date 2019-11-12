@@ -7,14 +7,20 @@ namespace Roguelike
     {
         private Hero CurrentHero = new Hero();
         private bool GameOver = false;
-        private string[] Map;
         //Remake offsets like class fields
-        private Point MapOffset;
+        private Point MapOffset; //Coords of left top corner of MapBorder
         private Point InfoOffset;
+        private Map map = new Map();
+        //Maybe we will need it later
+        public Rectangle HeroInfoBorder { get; set; }
+        public Rectangle MapBorder { get; set; }
+        public Rectangle InfoBorder { get; set; }
 
         private void Init()
         {
-            Map = File.ReadAllLines($"Locations/location1.txt");
+            map.Build();
+            //Map = File.ReadAllLines($"Locations/location1.txt");
+            //Обернуть код ниже в конструктор.
             CurrentHero.Coords = new Point(10, 10);
             CurrentHero.PrevCoords = new Point(10, 10);
             CurrentHero.HitPoints = 15; //should depend on class/hit dices
@@ -25,31 +31,31 @@ namespace Roguelike
 
         private void DrawAllBorders()
         {
-            Rectangle mapBorder = new Rectangle
+            MapBorder = new Rectangle
             {
                 Width = Console.WindowWidth * 3 / 4,
                 Height = Console.WindowHeight * 4 / 5
             };
-            mapBorder.Location = new Point(Console.WindowWidth - mapBorder.Width, 0);
-            MapOffset = new Point(mapBorder.Location.X + 1, mapBorder.Location.Y + 1);
-            DrawBorder(mapBorder);
+            MapBorder.Location = new Point(Console.WindowWidth - MapBorder.Width, 0);
+            MapOffset = new Point(MapBorder.Location.X + 1, MapBorder.Location.Y + 1);
+            DrawBorder(MapBorder);
 
-            Rectangle infoBorder = new Rectangle
+            InfoBorder = new Rectangle
             {
-                Height = Console.WindowHeight - mapBorder.Height,
+                Height = Console.WindowHeight - MapBorder.Height,
                 Width = Console.WindowWidth,
-                Location = new Point(0, mapBorder.Height)
+                Location = new Point(0, MapBorder.Height)
             };
-            InfoOffset = new Point(infoBorder.Location.X + 1, infoBorder.Location.Y + 1);
-            DrawBorder(infoBorder);
+            InfoOffset = new Point(InfoBorder.Location.X + 1, InfoBorder.Location.Y + 1);
+            DrawBorder(InfoBorder);
 
-            Rectangle heroInfoBorder = new Rectangle
+            HeroInfoBorder = new Rectangle
             {
-                Width = Console.WindowWidth - mapBorder.Width,
-                Height = mapBorder.Height,
+                Width = Console.WindowWidth - MapBorder.Width,
+                Height = MapBorder.Height,
                 Location = new Point(0, 0)
             };
-            DrawBorder(heroInfoBorder);
+            DrawBorder(HeroInfoBorder);
         }
 
         private void Input()
@@ -71,7 +77,7 @@ namespace Roguelike
                 //we do "return" here cause we don't need to redraw map
                 //in case hero don't move
             }
-            CurrentHero.HandleCollisions(Map[CurrentHero.Coords.Y][CurrentHero.Coords.X]);
+            CurrentHero.HandleCollisions(map.WorldAscii[CurrentHero.Coords.Y][CurrentHero.Coords.X]);
 
             //loop over all monsters (probably at a distance x from hero)
             //MonsterId.Move; //some kind of monster identificator
@@ -83,17 +89,19 @@ namespace Roguelike
             Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
             Console.Write("@");
             Console.SetCursorPosition(CurrentHero.PrevCoords.X + MapOffset.X, CurrentHero.PrevCoords.Y + MapOffset.Y);
-            Console.Write(Map[CurrentHero.PrevCoords.Y][CurrentHero.PrevCoords.X]);
+            Console.Write(map.WorldAscii[CurrentHero.PrevCoords.Y][CurrentHero.PrevCoords.X]);
         }
 
         private void Draw()
         {
             Console.Clear();
             DrawAllBorders();
-            for (int i = 0; i < Map.Length; i++)
+            for (int i = 0; i < MapBorder.Height - 2 && i < map.WorldAscii.Length; i++)
             {
                 Console.SetCursorPosition(MapOffset.X, MapOffset.Y + i);
-                Console.WriteLine(Map[i]);
+                string mapstr = map.WorldAscii[i].Length > MapBorder.Width - 2 ?
+                 map.WorldAscii[i].Substring(0, MapBorder.Width - 2) : map.WorldAscii[i];  
+                Console.WriteLine(mapstr);
             }
             Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
             Console.Write("@");
@@ -131,6 +139,8 @@ namespace Roguelike
         {
             Menu menu = new Menu();
             string selected = menu.Process();
+            // У меню есть пункты - отдельные объекты, у каждого объекта есть свой метод doAction();
+            // Т.е. при выборе пункта вызывается .DoACtion() вместо сравнения строк.
             if (selected == "New Game") PlayGame();
             if (selected == "Exit") Program.CleanUpAndExit();
         }

@@ -47,7 +47,7 @@
     <Compile Include="Character.cs" />
     <Compile Include="GameEngine.cs" />
     <Compile Include="Hero.cs" />
-    <Compile Include="Location.cs" />
+    <Compile Include="Map.cs" />
     <Compile Include="Monster.cs" />
     <Compile Include="Shapes.cs" />
     <Compile Include="Program.cs" />
