@@ -34,34 +34,7 @@ namespace Roguelike
             CurrentHero.Name = "Chiks-Chiriks";
         }
 
-        private void DrawAllBorders()
-        {
-            MapBorder = new Rectangle
-            {
-                Width = Console.WindowWidth * 3 / 4,
-                Height = Console.WindowHeight * 4 / 5
-            };
-            MapBorder.Location = new Point(Console.WindowWidth - MapBorder.Width, 0);
-            MapOffset = new Point(MapBorder.Location.X + 1, MapBorder.Location.Y + 1);
-            DrawBorder(MapBorder);
-
-            InfoBorder = new Rectangle
-            {
-                Height = Console.WindowHeight - MapBorder.Height,
-                Width = Console.WindowWidth,
-                Location = new Point(0, MapBorder.Height)
-            };
-            InfoOffset = new Point(InfoBorder.Location.X + 1, InfoBorder.Location.Y + 1);
-            DrawBorder(InfoBorder);
-
-            HeroInfoBorder = new Rectangle
-            {
-                Width = Console.WindowWidth - MapBorder.Width,
-                Height = MapBorder.Height,
-                Location = new Point(0, 0)
-            };
-            DrawBorder(HeroInfoBorder);
-        }
+        
 
         private void Input()
         {
@@ -93,6 +66,7 @@ namespace Roguelike
             //ParseMonsterCollisions(MonsterId);
 
         }
+        #region drawstuff
         private void Redraw()
         {
             Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
@@ -115,7 +89,34 @@ namespace Roguelike
             Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
             Console.Write("@");
         }
+        private void DrawAllBorders()
+        {
+            MapBorder = new Rectangle
+            {
+                Width = Console.WindowWidth * 3 / 4,
+                Height = Console.WindowHeight * 4 / 5
+            };
+            MapBorder.Location = new Point(Console.WindowWidth - MapBorder.Width, 0);
+            MapOffset = new Point(MapBorder.Location.X + 1, MapBorder.Location.Y + 1);
+            DrawBorder(MapBorder);
 
+            InfoBorder = new Rectangle
+            {
+                Height = Console.WindowHeight - MapBorder.Height,
+                Width = Console.WindowWidth,
+                Location = new Point(0, MapBorder.Height)
+            };
+            InfoOffset = new Point(InfoBorder.Location.X + 1, InfoBorder.Location.Y + 1);
+            DrawBorder(InfoBorder);
+
+            HeroInfoBorder = new Rectangle
+            {
+                Width = Console.WindowWidth - MapBorder.Width,
+                Height = MapBorder.Height,
+                Location = new Point(0, 0)
+            };
+            DrawBorder(HeroInfoBorder);
+        }
         private void DrawBorder(Rectangle border)
         {
             int width = border.Width;
@@ -143,7 +144,7 @@ namespace Roguelike
             Console.SetCursorPosition(location.X + width - 1, location.Y + height - 1);
             Console.Write("╝");
         }
-
+        #endregion
         public void StartMenu()
         {
             Menu menu = new Menu();
