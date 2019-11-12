@@ -15,6 +15,8 @@ namespace Roguelike
         public Rectangle HeroInfoBorder { get; set; }
         public Rectangle MapBorder { get; set; }
         public Rectangle InfoBorder { get; set; }
+        private int ConsoleHeight = 0;
+        private int ConsoleWidth = 0;
 
         private void Init()
         {
@@ -61,6 +63,10 @@ namespace Roguelike
         private void Input()
         {
             var key = Console.ReadKey(true).Key;
+            if (ConsoleWidth != Console.WindowWidth || ConsoleHeight != Console.WindowHeight)
+                Draw();
+            ConsoleWidth = Console.WindowWidth;
+            ConsoleHeight = Console.WindowHeight;
             CurrentHero.CurrentMoveAction = (Hero.MoveAction)key;
             CurrentHero.CurrentGameAction = (Hero.GameAction)key;
         }
