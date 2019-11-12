@@ -8,6 +8,7 @@ namespace Roguelike
 {
     class Program
     {
+        public static GameEngine GameEngine = new GameEngine();
         public static void CleanUpAndExit()
         {
             Console.Clear();
@@ -21,10 +22,8 @@ namespace Roguelike
             {
                 CleanUpAndExit();
             };
-
+            GameEngine.StartMenu();
             Console.CursorVisible = false;
-            GameEngine gameEngine = new GameEngine();
-            gameEngine.StartMenu();
             //gameEngine.StartGame();
         }
     }

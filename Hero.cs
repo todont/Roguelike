@@ -7,20 +7,12 @@ namespace Roguelike
 {
     class Hero : Character
     {
-        public int ExpPoints { get; set; }        //next code is strange, mb Andrey will give me an advice        public enum MenuAction        {            Up = ConsoleKey.UpArrow,
-            Down = ConsoleKey.DownArrow,
-            Right = ConsoleKey.RightArrow,
-            Left = ConsoleKey.LeftArrow,            Confirm = ConsoleKey.Enter,
-            Exit = ConsoleKey.Escape        }
-        public MenuAction CurrentMenuAction { get; set; }        public void DoMenuAction()
-        {
-            return;
-        }
-        //end of strange code
+        public int ExpPoints { get; set; }
         public enum GameAction
         {
             OpenInventory = ConsoleKey.E,
-            PickUpItem = ConsoleKey.G
+            PickUpItem = ConsoleKey.G,
+            Exit = ConsoleKey.Escape
         }        public GameAction CurrentGameAction { get; set; }        public void DoGameAction()
         {
             switch (CurrentGameAction)
@@ -32,6 +24,9 @@ namespace Roguelike
                     break;
                 case GameAction.PickUpItem:
                     //Hero.AddItem(Item)
+                    break;
+                case GameAction.Exit:
+                    Program.GameEngine.StartMenu();
                     break;
                 default:
                     break;
