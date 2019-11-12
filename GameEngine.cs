@@ -145,6 +145,13 @@ namespace Roguelike
             Console.Write("╝");
         }
         #endregion
+
+        public char GetMapSymbol(Point point)
+        {
+            char symbol = Map.WorldAscii[point.Y][point.X];
+            return symbol;
+        }
+
         public void StartMenu()
         {
             Menu menu = new Menu();

@@ -152,12 +152,6 @@ namespace CaveGenerator
             return Caves.Count();
         }
 
-        public char GetSymbol(Point point)
-        {
-            char symbol = WorldAscii[point.Y][point.X];
-            return symbol;
-        }
-
         #endregion
 
 
