@@ -10,8 +10,7 @@ namespace Roguelike
     {
         public enum Speed 
         { 
-            Low,
-            Medium,
+            Normal,
             High
         }
         public enum MoveAction

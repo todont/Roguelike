@@ -6,11 +6,10 @@ namespace Roguelike
 {
     class GameEngine
     {
-        private Hero CurrentHero = new Hero();
+        private Hero CurrentHero;
         private bool GameOver = false;
-        //Remake offsets like class fields
         private Point MapOffset; //Coords of left top corner of MapBorder
-        private Cave Map = new Cave();
+        private Cave Map;
         //Maybe we will need it later
         public Rectangle HeroInfoBorder { get; set; }
         public Rectangle MapBorder { get; set; }
@@ -20,36 +19,23 @@ namespace Roguelike
 
         private void Init()
         {
+            Map = new Cave();
             Map.Build();
             Map.ConnectCaves();
             Map.WriteMapIntoFile();
             //Map = File.ReadAllLines($"Locations/location1.txt");
-            //Обернуть код ниже в конструктор.
-            CurrentHero.Coords = new Point(14, 10);
-            CurrentHero.PrevCoords = new Point(10, 10);
-            CurrentHero.HitPoints = 15; //should depend on class/hit dices
-            CurrentHero.ExpPoints = 0;
-            CurrentHero.CurrentSpeed = Hero.Speed.High;
-            CurrentHero.Name = "Chiks-Chiriks";
+            CurrentHero = new Hero(new Point(10,10), 15, 0, Character.Speed.Normal, "Chiks-Chiriks");
         }
 
         private void Input()
         {
             var key = Console.ReadKey(true).Key;
-            if (ConsoleWidth != Console.WindowWidth || ConsoleHeight != Console.WindowHeight)
-                Draw();
-            ConsoleWidth = Console.WindowWidth;
-            ConsoleHeight = Console.WindowHeight;
             CurrentHero.CurrentMoveAction = (Hero.MoveAction)key;
             CurrentHero.CurrentGameAction = (Hero.GameAction)key;
         }
 
         private void Logic()
         {
-            //if we in the menu, everything became different
-            //CurrentHero.DoMenuAction();
-            //else
-
             if (CurrentHero.Move() == false)
             {
                 CurrentHero.DoGameAction();
@@ -57,12 +43,8 @@ namespace Roguelike
                 //we do "return" here cause we don't need to redraw map
                 //in case hero don't move
             }
-            CurrentHero.HandleCollisions(Map.WorldAscii[CurrentHero.Coords.Y][CurrentHero.Coords.X]);
-
             //loop over all monsters (probably at a distance x from hero)
-            //MonsterId.Move; //some kind of monster identificator
-            //ParseMonsterCollisions(MonsterId);
-
+            //MonsterId.Move(); //some kind of monster identificator
         }
         #region drawstuff
         private void Redraw()
@@ -169,6 +151,11 @@ namespace Roguelike
             Draw();
             while (!GameOver)
             {
+                if (ConsoleWidth != Console.WindowWidth || ConsoleHeight != Console.WindowHeight)
+                    Draw();
+                ConsoleWidth = Console.WindowWidth;
+                ConsoleHeight = Console.WindowHeight;
+
                 Input();
                 Logic();
                 if (CurrentHero.PrevCoords.X != CurrentHero.Coords.X

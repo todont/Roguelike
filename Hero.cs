@@ -7,6 +7,15 @@ namespace Roguelike
 {
     class Hero : Character
     {
+        public Hero(Point coords, int hitPoints, int expPoints, Hero.Speed speed, string name)
+        {
+            Coords = coords;
+            PrevCoords = coords;
+            HitPoints = hitPoints; //should depend on class/hit dices
+            ExpPoints = expPoints;
+            CurrentSpeed = speed;
+            Name = name;
+        }
         public int ExpPoints { get; set; }
         public enum GameAction
         {
