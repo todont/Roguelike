@@ -7,13 +7,24 @@ namespace Roguelike
 {
     class Hero : Character
     {
+        public Hero(Point coords, int hitPoints, int expPoints, Hero.Speed speed, string name)
+        {
+            Coords = coords;
+            PrevCoords = coords;
+            HitPoints = hitPoints; //should depend on class/hit dices
+            ExpPoints = expPoints;
+            CurrentSpeed = speed;
+            Name = name;
+        }
         public int ExpPoints { get; set; }
         public enum GameAction
         {
             OpenInventory = ConsoleKey.E,
             PickUpItem = ConsoleKey.G,
-            Exit = ConsoleKey.Escape
-        }        public GameAction CurrentGameAction { get; set; }        public void DoGameAction()
+            Exit = ConsoleKey.Escape,
+            Attack,
+            DropItem
+        }        public GameAction CurrentGameAction { get; set; }        public void DoGameAction()
         {
             switch (CurrentGameAction)
             {
@@ -28,24 +39,33 @@ namespace Roguelike
                 case GameAction.Exit:
                     Program.GameEngine.StartMenu();
                     break;
+                case GameAction.Attack:
+                    //attack
+                    break;
+                case GameAction.DropItem:
+                    //drop item
+                    break;
                 default:
                     break;
             }
-        }        public void HandleCollisions(char clashedSymbol)
+        }        protected override bool HandleCollisions(char clashedSymbol)
         {
             switch (clashedSymbol)
             {
-                case '#':
-                    StepBack();
-                    //TODO: make this as log function that depends on symbol we switching
-                    //Console.SetCursorPosition(0, 0);
-                    //Console.WriteLine("You hit a wall!");
-                    break;
-                //case 'monster tile'
-                // Attack()
+                case '▒':
+                    //make this as log function that depends on symbol we switching
+                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
+                    Console.WriteLine("You hit a wall!");
+                    return false;
+                case 'S': //snake
+                    //CurrentGameAction = attack
+                    return false;
+                case '$': //money
+                    //CurrentGameAction = pick up item
+                    return true;
                 default:
-                    //Console.SetCursorPosition(0, 0);
-                    //Console.WriteLine(new string(' ', 60));
-                    break;
+                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
+                    Console.WriteLine(new string(' ', 20));
+                    return true;
             }
-        }    }}
+        }    }}
