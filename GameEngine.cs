@@ -10,7 +10,6 @@ namespace Roguelike
         private bool GameOver = false;
         //Remake offsets like class fields
         private Point MapOffset; //Coords of left top corner of MapBorder
-        private Point InfoOffset;
         private Cave Map = new Cave();
         //Maybe we will need it later
         public Rectangle HeroInfoBorder { get; set; }
@@ -34,8 +33,6 @@ namespace Roguelike
             CurrentHero.Name = "Chiks-Chiriks";
         }
 
-        
-
         private void Input()
         {
             var key = Console.ReadKey(true).Key;
@@ -46,6 +43,7 @@ namespace Roguelike
             CurrentHero.CurrentMoveAction = (Hero.MoveAction)key;
             CurrentHero.CurrentGameAction = (Hero.GameAction)key;
         }
+
         private void Logic()
         {
             //if we in the menu, everything became different
@@ -89,6 +87,7 @@ namespace Roguelike
             Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
             Console.Write("@");
         }
+
         private void DrawAllBorders()
         {
             MapBorder = new Rectangle
@@ -104,19 +103,21 @@ namespace Roguelike
             {
                 Height = Console.WindowHeight - MapBorder.Height,
                 Width = Console.WindowWidth,
-                Location = new Point(0, MapBorder.Height)
+                Location = new Point(0, MapBorder.Height),
+                Offset = new Point(1, MapBorder.Height + 1)
             };
-            InfoOffset = new Point(InfoBorder.Location.X + 1, InfoBorder.Location.Y + 1);
             DrawBorder(InfoBorder);
 
             HeroInfoBorder = new Rectangle
             {
                 Width = Console.WindowWidth - MapBorder.Width,
                 Height = MapBorder.Height,
-                Location = new Point(0, 0)
+                Location = new Point(0, 0),
+                Offset = new Point(1, 1)
             };
             DrawBorder(HeroInfoBorder);
         }
+
         private void DrawBorder(Rectangle border)
         {
             int width = border.Width;

@@ -19,6 +19,7 @@ namespace Roguelike
 
     class Rectangle
     {
+        public Point Offset { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public Point Location { get; set; }
