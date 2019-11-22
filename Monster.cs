@@ -14,22 +14,19 @@ namespace Roguelike
         //Attack(). this function mb will be decorated by 
         //monster sub-classes
 
-        public enum GameAction
+        public enum GameAction 
         {
-
+            Attack
         }
         public GameAction CurrentGameAction { get; set; }
-        public void DetectCollisions(char clashedSymbol)
+        protected override bool HandleCollisions(char clashedSymbol)
         {
             switch (clashedSymbol)
             {
-                case '#':
-                    StepBack();
-                    break;
-                //case 'hero tile'
-                // Attack()
+                case '▒':
+                    return false;
                 default:
-                    break;
+                    return true;
             }
         }
     }

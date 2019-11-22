@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Roguelike
 {
-    class Character
+    abstract class Character
     {
         public enum Speed 
         { 
@@ -21,63 +21,103 @@ namespace Roguelike
             Right = ConsoleKey.RightArrow,
             Left = ConsoleKey.LeftArrow
         }
-
         public string Name { get; set; }
         public Point Coords { get; set; }
         public Point PrevCoords { get; set; }
         public MoveAction CurrentMoveAction { get; set; }
         public Speed CurrentSpeed { get; set; }
         public int HitPoints { get; set; }
+        protected abstract bool HandleCollisions(char clashedSymbol);
+        //sets enum GameAction, returns true if we can move, otherwise - false
+        public void MoveUp()
+        {
+            --Coords.Y;
+        }
+        public void MoveDown()
+        {
+            ++Coords.Y;
+        }
+        public void MoveLeft()
+        {
+            --Coords.X;
+        }
+        public void MoveRight()
+        {
+            ++Coords.X;
+        }
         private void SetPrevCoords()
         {
             PrevCoords.X = Coords.X;
             PrevCoords.Y = Coords.Y;
         }
-        public void MoveUp()
+        private void SetPrevPlusMove(MoveAction action)
         {
             SetPrevCoords();
-            --Coords.Y;
-        }
-        public void MoveDown()
-        {
-            SetPrevCoords();
-            ++Coords.Y;
-        }
-        public void MoveLeft()
-        {
-            SetPrevCoords();
-            --Coords.X;
-        }
-        public void MoveRight()
-        {
-            SetPrevCoords();
-            ++Coords.X;
-        }
-        public void StepBack()
-        {
-            Coords.X = PrevCoords.X;
-            Coords.Y = PrevCoords.Y;
-        }
-
-        public bool Move()
-        {
-            switch (CurrentMoveAction)
+            switch(action)
             {
                 case MoveAction.Up:
                     MoveUp();
-                    return true;
+                    break;
                 case MoveAction.Down:
                     MoveDown();
-                    return true;
+                    break;
                 case MoveAction.Left:
                     MoveLeft();
-                    return true;
+                    break;
                 case MoveAction.Right:
                     MoveRight();
-                    return true;
-                default:
-                    return false;
+                    break;
             }
+        }
+        public bool Move() //returns true if character was moved, otherwise - false
+        {
+            bool isMove;
+            switch (CurrentMoveAction)
+            {
+                case MoveAction.Up:
+                    isMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y - 1)));
+                    if (isMove) SetPrevPlusMove(MoveAction.Up);
+                    break;
+                case MoveAction.Down:
+                    isMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y + 1)));
+                    if (isMove) SetPrevPlusMove(MoveAction.Down);
+                    break;
+                case MoveAction.Left:
+                    isMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X - 1, Coords.Y)));
+                    if (isMove) SetPrevPlusMove(MoveAction.Left);
+                    break;
+                case MoveAction.Right:
+                    isMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X + 1, Coords.Y)));
+                    if (isMove) SetPrevPlusMove(MoveAction.Right);
+                    break;
+                default:
+                    isMove = false;
+                    break;
+            }
+            if(CurrentSpeed == Speed.High && isMove)
+            {
+                bool isDoubleMove;
+                switch (CurrentMoveAction)
+                {
+                    case MoveAction.Up:
+                        isDoubleMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y - 1)));
+                        if (isDoubleMove) MoveUp();
+                        break;
+                    case MoveAction.Down:
+                        isDoubleMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y + 1)));
+                        if (isDoubleMove) MoveDown();
+                        break;
+                    case MoveAction.Left:
+                        isDoubleMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X - 1, Coords.Y)));
+                        if (isDoubleMove) MoveLeft();
+                        break;
+                    case MoveAction.Right:
+                        isDoubleMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X + 1, Coords.Y)));
+                        if (isDoubleMove) MoveRight();
+                        break;
+                }
+            }
+            return isMove;
         }
     }
 }
