@@ -95,7 +95,7 @@ namespace CaveGenerator
         /// </summary>
         public Cave()
         {
-            rnd = new Random(12345);
+            rnd = new Random(1653);
             Neighbours = 4;
             Iterations = 50000;
             CloseCellProb = 45;

@@ -22,8 +22,8 @@ namespace Roguelike
             {
                 CleanUpAndExit();
             };
-            GameEngine.StartMenu();
             Console.CursorVisible = false;
+            GameEngine.StartMenu();
             //gameEngine.StartGame();
         }
     }
