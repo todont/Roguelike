@@ -30,7 +30,7 @@ namespace Roguelike
         private void Input()
         {
             var key = Console.ReadKey(true).Key;
-            CurrentHero.CurrentMoveAction = (Hero.MoveAction)key;
+            CurrentHero.CurrentMoveAction = (Character.MoveAction)key;
             CurrentHero.CurrentGameAction = (Hero.GameAction)key;
         }
 
