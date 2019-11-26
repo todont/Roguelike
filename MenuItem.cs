@@ -23,6 +23,7 @@ namespace Roguelike
         }
         public override void OnClick()
         {
+            Program.GameEngine.Init();
             Program.GameEngine.PlayGame();
         }
     }
@@ -32,6 +33,11 @@ namespace Roguelike
         public MenuItemResume()
         {
             Name = "Resume";
+        }
+        public override void OnClick()
+        {
+            if (Program.GameEngine.GameStarted == true)
+                Program.GameEngine.PlayGame();
         }
     }
 
