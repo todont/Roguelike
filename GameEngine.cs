@@ -137,12 +137,8 @@ namespace Roguelike
 
         public void StartMenu()
         {
-            Menu menu = new Menu();
-            string selected = menu.Process();
-            // У меню есть пункты - отдельные объекты, у каждого объекта есть свой метод doAction();
-            // Т.е. при выборе пункта вызывается .DoACtion() вместо сравнения строк.
-            if (selected == "New Game") PlayGame();
-            if (selected == "Exit") Program.CleanUpAndExit();
+            StartingMenu startingMenu = new StartingMenu();
+            startingMenu.Process();
         }
 
         public void PlayGame()
