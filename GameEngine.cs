@@ -217,6 +217,7 @@ namespace Roguelike
             {
                 if (ConsoleWidth != Console.WindowWidth || ConsoleHeight != Console.WindowHeight)
                 {
+                    Console.CursorVisible = false;
                     Console.Clear();
                     DrawAllBorders();
                     Draw();
