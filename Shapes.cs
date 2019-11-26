@@ -15,6 +15,7 @@ namespace Roguelike
             X = x;
             Y = y;
         }
+        public Point() { }
     }
 
     class Rectangle

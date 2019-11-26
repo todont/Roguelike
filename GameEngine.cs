@@ -8,7 +8,7 @@ namespace Roguelike
     {
         private Hero CurrentHero;
         private bool GameOver = false;
-        private Point MapOffset; //Coords of left top corner of MapBorder
+        //Remake offsets like class fields
         private Cave Map;
         //Maybe we will need it later
         public Rectangle HeroInfoBorder { get; set; }
@@ -23,8 +23,8 @@ namespace Roguelike
             Map.Build();
             Map.ConnectCaves();
             Map.WriteMapIntoFile();
-            //Map = File.ReadAllLines($"Locations/location1.txt");
-            CurrentHero = new Hero(new Point(10,10), 15, 0, Character.Speed.Normal, "Chiks-Chiriks");
+            Map.Offset = new Point(0, 0);
+            CurrentHero = new Hero(new Point(10, 10), 15, 0, Character.Speed.Normal, "Chiks-Chiriks");
         }
 
         private void Input()
@@ -43,30 +43,97 @@ namespace Roguelike
                 //we do "return" here cause we don't need to redraw map
                 //in case hero don't move
             }
+            MoveMap();
             //loop over all monsters (probably at a distance x from hero)
-            //MonsterId.Move(); //some kind of monster identificator
+            //MonsterId.Move; //some kind of monster identificator
         }
+
+        enum MapMoveDirection
+        {
+            Top,
+            Bot,
+            Left,
+            Right
+        }
+
+        private void MoveMap()
+        {
+            int distToTop = CurrentHero.Coords.Y + 1;
+            int distToLeft = CurrentHero.Coords.X + 1;
+            int distToRight = MapBorder.Width - CurrentHero.Coords.X - 2;
+            int distToBot = MapBorder.Height - 2 - CurrentHero.Coords.Y;
+            int critDistHor = MapBorder.Width / 8;
+            int critDistVert = MapBorder.Height / 8;
+            if (distToTop <= critDistVert)
+                MoveMapToDir(MapMoveDirection.Bot);
+            else if (distToBot <= critDistVert)
+                MoveMapToDir(MapMoveDirection.Top);
+            else if (distToRight <= critDistHor)
+                MoveMapToDir(MapMoveDirection.Left);
+            else if (distToLeft <= critDistHor)
+                MoveMapToDir(MapMoveDirection.Right);
+        }
+
+        private void MoveMapToDir(MapMoveDirection direction)
+        {
+            int offset, length;
+            switch (direction)
+            {
+                case MapMoveDirection.Top:
+                    offset = Map.Offset.Y;
+                    length = Map.WorldAscii.Length;
+                    Map.Offset.Y = offset + 1 < length ? offset + 1 : offset;
+                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
+                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
+                    Draw();
+                    break;
+                case MapMoveDirection.Bot:
+                    offset = Map.Offset.Y;
+                    Map.Offset.Y = offset - 1 >= 0 ? offset - 1 : offset;
+                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
+                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
+                    Draw();
+                    break;
+                case MapMoveDirection.Left:
+                    offset = Map.Offset.X;
+                    length = Map.WorldAscii[0].Length;
+                    Map.Offset.X = offset + 1 < length ? offset + 1 : offset;
+                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
+                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
+                    Draw();
+                    break;
+                case MapMoveDirection.Right:
+                    offset = Map.Offset.X;
+                    Map.Offset.X = offset - 1 >= 0 ? offset - 1 : offset;
+                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
+                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
+                    Draw();
+                    break;
+            }
+        }
+
         #region drawstuff
         private void Redraw()
         {
-            Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
+            Console.SetCursorPosition(CurrentHero.Coords.X + MapBorder.Offset.X, CurrentHero.Coords.Y + MapBorder.Offset.Y);
             Console.Write("@");
-            Console.SetCursorPosition(CurrentHero.PrevCoords.X + MapOffset.X, CurrentHero.PrevCoords.Y + MapOffset.Y);
-            Console.Write(Map.WorldAscii[CurrentHero.PrevCoords.Y][CurrentHero.PrevCoords.X]);
+            Console.SetCursorPosition(CurrentHero.PrevCoords.X + MapBorder.Offset.X, CurrentHero.PrevCoords.Y + MapBorder.Offset.Y);
+            Console.Write(Map.WorldAscii[CurrentHero.PrevCoords.Y + Map.Offset.Y][CurrentHero.PrevCoords.X + Map.Offset.X]);
         }
 
         private void Draw()
         {
-            Console.Clear();
-            DrawAllBorders();
-            for (int i = 0; i < MapBorder.Height - 2 && i < Map.WorldAscii.Length; i++)
+            //Console.Clear();
+            //DrawAllBorders();
+            for (int i = Map.Offset.Y, j = 0; j < MapBorder.Height - 2 && i < Map.WorldAscii.Length; i++, j++)
             {
-                Console.SetCursorPosition(MapOffset.X, MapOffset.Y + i);
+                Console.SetCursorPosition(MapBorder.Offset.X, MapBorder.Offset.Y + j);
                 string mapstr = Map.WorldAscii[i].Length > MapBorder.Width - 2 ?
-                 Map.WorldAscii[i].Substring(0, MapBorder.Width - 2) : Map.WorldAscii[i];  
+                 Map.WorldAscii[i].Substring(Map.Offset.X, MapBorder.Width - 2) :
+                 Map.WorldAscii[i].Substring(Map.Offset.X);
                 Console.WriteLine(mapstr);
             }
-            Console.SetCursorPosition(CurrentHero.Coords.X + MapOffset.X, CurrentHero.Coords.Y + MapOffset.Y);
+            Console.SetCursorPosition(CurrentHero.Coords.X + MapBorder.Offset.X, CurrentHero.Coords.Y + MapBorder.Offset.Y);
             Console.Write("@");
         }
 
@@ -78,7 +145,7 @@ namespace Roguelike
                 Height = Console.WindowHeight * 4 / 5
             };
             MapBorder.Location = new Point(Console.WindowWidth - MapBorder.Width, 0);
-            MapOffset = new Point(MapBorder.Location.X + 1, MapBorder.Location.Y + 1);
+            MapBorder.Offset = new Point(MapBorder.Location.X + 1, MapBorder.Location.Y + 1);
             DrawBorder(MapBorder);
 
             InfoBorder = new Rectangle
@@ -131,7 +198,7 @@ namespace Roguelike
 
         public char GetMapSymbol(Point point)
         {
-            char symbol = Map.WorldAscii[point.Y][point.X];
+            char symbol = Map.WorldAscii[point.Y + Map.Offset.Y][point.X + Map.Offset.X];
             return symbol;
         }
 
@@ -144,11 +211,17 @@ namespace Roguelike
         public void PlayGame()
         {
             Init();
+            Console.Clear();
+            DrawAllBorders();
             Draw();
             while (!GameOver)
             {
                 if (ConsoleWidth != Console.WindowWidth || ConsoleHeight != Console.WindowHeight)
+                {
+                    Console.Clear();
+                    DrawAllBorders();
                     Draw();
+                }
                 ConsoleWidth = Console.WindowWidth;
                 ConsoleHeight = Console.WindowHeight;
 
@@ -156,7 +229,7 @@ namespace Roguelike
                 Logic();
                 if (CurrentHero.PrevCoords.X != CurrentHero.Coords.X
                 || CurrentHero.PrevCoords.Y != CurrentHero.Coords.Y)
-                    Redraw(); 
+                    Redraw();
                     //need to Redraw() not only when PrevCoords!=Coords.
                     //For example, if we just killed a monster
             }

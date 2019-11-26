@@ -18,6 +18,7 @@ namespace CaveGenerator
         private Random rnd;
 
         public string[] WorldAscii { get; private set; }
+        public Roguelike.Point Offset { get; set; }
         #region properties
 
         public int Neighbours { get; set; }
@@ -95,7 +96,7 @@ namespace CaveGenerator
         /// </summary>
         public Cave()
         {
-            rnd = new Random(1653);
+            rnd = new Random();
             Neighbours = 4;
             Iterations = 50000;
             CloseCellProb = 45;
@@ -103,7 +104,7 @@ namespace CaveGenerator
             LowerLimit = 16;
             UpperLimit = 500;
 
-            MapSize = new Size(300, 300);
+            MapSize = new Size(150, 150);
 
             EmptyNeighbours = 3;
             EmptyCellNeighbours = 4;
