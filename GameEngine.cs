@@ -8,16 +8,15 @@ namespace Roguelike
     {
         private Hero CurrentHero;
         private bool GameOver = false;
-        //Remake offsets like class fields
+        public bool GameStarted { get; private set; }
         private Cave Map;
-        //Maybe we will need it later
         public Rectangle HeroInfoBorder { get; set; }
         public Rectangle MapBorder { get; set; }
         public Rectangle InfoBorder { get; set; }
         private int ConsoleHeight = 0;
         private int ConsoleWidth = 0;
 
-        private void Init()
+        public void Init()
         {
             Map = new Cave();
             Map.Build();
@@ -25,6 +24,7 @@ namespace Roguelike
             Map.WriteMapIntoFile();
             Map.Offset = new Point(0, 0);
             CurrentHero = new Hero(new Point(10, 10), 15, 0, Character.Speed.Normal, "Chiks-Chiriks");
+            GameStarted = true;
         }
 
         private void Input()
@@ -210,7 +210,6 @@ namespace Roguelike
 
         public void PlayGame()
         {
-            Init();
             Console.Clear();
             DrawAllBorders();
             Draw();
