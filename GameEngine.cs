@@ -83,33 +83,23 @@ namespace Roguelike
                     offset = Map.Offset.Y;
                     length = Map.WorldAscii.Length;
                     Map.Offset.Y = offset + 1 < length ? offset + 1 : offset;
-                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
-                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
-                    Draw();
                     break;
                 case MapMoveDirection.Bot:
                     offset = Map.Offset.Y;
                     Map.Offset.Y = offset - 1 >= 0 ? offset - 1 : offset;
-                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
-                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
-                    Draw();
                     break;
                 case MapMoveDirection.Left:
                     offset = Map.Offset.X;
                     length = Map.WorldAscii[0].Length;
                     Map.Offset.X = offset + 1 < length ? offset + 1 : offset;
-                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
-                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
-                    Draw();
                     break;
                 case MapMoveDirection.Right:
                     offset = Map.Offset.X;
                     Map.Offset.X = offset - 1 >= 0 ? offset - 1 : offset;
-                    CurrentHero.Coords.X = CurrentHero.PrevCoords.X;
-                    CurrentHero.Coords.Y = CurrentHero.PrevCoords.Y;
-                    Draw();
                     break;
             }
+            CurrentHero.RestoreCoords();
+            Draw();
         }
 
         #region drawstuff

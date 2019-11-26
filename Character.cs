@@ -44,6 +44,11 @@ namespace Roguelike
         {
             ++Coords.X;
         }
+        public void RestoreCoords()
+        {
+            Coords.X = PrevCoords.X;
+            Coords.Y = PrevCoords.Y;
+        }
         private void SetPrevCoords()
         {
             PrevCoords.X = Coords.X;
