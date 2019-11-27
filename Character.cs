@@ -30,7 +30,7 @@ namespace Roguelike
         public char Symbol { get; set; }
         public bool IsMoved { get; set; }
         protected abstract bool HandleCollisions(char clashedSymbol);
-        //sets enum GameAction, returns true if we can move, otherwise - false
+        //sets CurrentGameAction, returns true if we can move, otherwise - false
         public void MoveUp()
         {
             --Coords.Y;
@@ -76,7 +76,7 @@ namespace Roguelike
                     break;
             }
         }
-        public bool Move() //returns true if character was moved, otherwise - false
+        public void Move() //sets IsMoved
         {
             switch (CurrentMoveAction)
             {
@@ -102,28 +102,22 @@ namespace Roguelike
             }
             if(CurrentSpeed == Speed.High && IsMoved)
             {
-                bool isDoubleMove;
                 switch (CurrentMoveAction)
                 {
                     case MoveAction.Up:
-                        isDoubleMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y - 1)));
-                        if (isDoubleMove) MoveUp();
+                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y - 1)))) MoveUp();
                         break;
                     case MoveAction.Down:
-                        isDoubleMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y + 1)));
-                        if (isDoubleMove) MoveDown();
+                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y + 1)))) MoveDown();
                         break;
                     case MoveAction.Left:
-                        isDoubleMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X - 1, Coords.Y)));
-                        if (isDoubleMove) MoveLeft();
+                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X - 1, Coords.Y)))) MoveLeft();
                         break;
                     case MoveAction.Right:
-                        isDoubleMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X + 1, Coords.Y)));
-                        if (isDoubleMove) MoveRight();
+                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X + 1, Coords.Y)))) MoveRight();
                         break;
                 }
             }
-            return IsMoved;
         }
     }
 }
