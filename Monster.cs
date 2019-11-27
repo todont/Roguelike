@@ -8,12 +8,19 @@ namespace Roguelike
 {
     class Monster : Character
     {
+        public Monster(Point coords, int hitPoints, int rangeOfVision, Character.Speed speed, string name, char symbol)
+        {
+            Coords = coords;
+            PrevCoords = new Point(coords.X, coords.Y);
+            HitPoints = hitPoints; //should depend on class/hit dices
+            RangeOfVision = rangeOfVision;
+            CurrentSpeed = speed;
+            Name = name;
+            Symbol = symbol;
+            IsMoved = false;
+        }
         //Tile MonsterTile (color and shape of 
         // symbol that represents monster)
-
-        //Attack(). this function mb will be decorated by 
-        //monster sub-classes
-
         public enum GameAction 
         {
             Attack

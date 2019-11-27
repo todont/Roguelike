@@ -8,8 +8,8 @@ namespace Roguelike
 {
     abstract class Character
     {
-        public enum Speed 
-        { 
+        public enum Speed
+        {
             Normal,
             High
         }
@@ -26,6 +26,9 @@ namespace Roguelike
         public MoveAction CurrentMoveAction { get; set; }
         public Speed CurrentSpeed { get; set; }
         public int HitPoints { get; set; }
+        public int RangeOfVision { get; set; }
+        public char Symbol { get; set; }
+        public bool IsMoved { get; set; }
         protected abstract bool HandleCollisions(char clashedSymbol);
         //sets enum GameAction, returns true if we can move, otherwise - false
         public void MoveUp()
@@ -75,30 +78,29 @@ namespace Roguelike
         }
         public bool Move() //returns true if character was moved, otherwise - false
         {
-            bool isMove;
             switch (CurrentMoveAction)
             {
                 case MoveAction.Up:
-                    isMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y - 1)));
-                    if (isMove) SetPrevPlusMove(MoveAction.Up);
+                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y - 1)));
+                    if (IsMoved) SetPrevPlusMove(MoveAction.Up);
                     break;
                 case MoveAction.Down:
-                    isMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y + 1)));
-                    if (isMove) SetPrevPlusMove(MoveAction.Down);
+                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y + 1)));
+                    if (IsMoved) SetPrevPlusMove(MoveAction.Down);
                     break;
                 case MoveAction.Left:
-                    isMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X - 1, Coords.Y)));
-                    if (isMove) SetPrevPlusMove(MoveAction.Left);
+                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X - 1, Coords.Y)));
+                    if (IsMoved) SetPrevPlusMove(MoveAction.Left);
                     break;
                 case MoveAction.Right:
-                    isMove = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X + 1, Coords.Y)));
-                    if (isMove) SetPrevPlusMove(MoveAction.Right);
+                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X + 1, Coords.Y)));
+                    if (IsMoved) SetPrevPlusMove(MoveAction.Right);
                     break;
                 default:
-                    isMove = false;
+                    IsMoved = false;
                     break;
             }
-            if(CurrentSpeed == Speed.High && isMove)
+            if(CurrentSpeed == Speed.High && IsMoved)
             {
                 bool isDoubleMove;
                 switch (CurrentMoveAction)
@@ -121,7 +123,7 @@ namespace Roguelike
                         break;
                 }
             }
-            return isMove;
+            return IsMoved;
         }
     }
 }
