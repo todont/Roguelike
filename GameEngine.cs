@@ -16,7 +16,7 @@ namespace Roguelike
         private int ConsoleHeight = 0;
         private int ConsoleWidth = 0;
         private Monster TmpMonster; //make this as list
-
+        private Random GameRandom = new Random();
         public void Init()
         {
             Map = new Cave();
@@ -45,7 +45,7 @@ namespace Roguelike
                 CurrentHero.DoGameAction();
                 return;
             }
-            TmpMonster.CurrentMoveAction = Character.MoveAction.Right;
+            TmpMonster.CurrentMoveAction = (Character.MoveAction)GameRandom.Next(37, 41);
             TmpMonster.Move();
             MoveMap();
         }
