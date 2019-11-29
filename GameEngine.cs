@@ -15,7 +15,8 @@ namespace Roguelike
         public Rectangle InfoBorder { get; set; }
         private int ConsoleHeight = 0;
         private int ConsoleWidth = 0;
-
+        private Monster TmpMonster; //make this as list
+        private Random GameRandom = new Random();
         public void Init()
         {
             Map = new Cave();
@@ -23,7 +24,8 @@ namespace Roguelike
             Map.ConnectCaves();
             Map.WriteMapIntoFile();
             Map.Offset = new Point(0, 0);
-            CurrentHero = new Hero(new Point(10, 10), 15, 0, Character.Speed.Normal, "Chiks-Chiriks");
+            CurrentHero = new Hero(new Point(12, 10), 15, 0, 20, Character.Speed.Normal, "Chiks-Chiriks");
+            TmpMonster = new Monster(new Point(15, 15), 10, 10, Character.Speed.Normal, "Snake", 'S');
             GameStarted = true;
         }
 
@@ -36,18 +38,23 @@ namespace Roguelike
 
         private void Logic()
         {
-            if (CurrentHero.Move() == false)
+            CurrentHero.Move();
+            if (!CurrentHero.IsMoved)
             {
+                //"if" is not correct, we mustn't go there if we hit a wall, for example
                 CurrentHero.DoGameAction();
                 return;
-                //we do "return" here cause we don't need to redraw map
-                //in case hero don't move
             }
+            TmpMonster.CurrentMoveAction = (Character.MoveAction)GameRandom.Next(37, 41);
+            TmpMonster.Move();
             MoveMap();
-            //loop over all monsters (probably at a distance x from hero)
-            //MonsterId.Move; //some kind of monster identificator
         }
-
+        public void StartMenu()
+        {
+            StartingMenu startingMenu = new StartingMenu();
+            startingMenu.Process();
+        }
+        #region drawstuff
         enum MapMoveDirection
         {
             Top,
@@ -100,15 +107,25 @@ namespace Roguelike
             }
             CurrentHero.RestoreCoords();
             Draw();
+            CurrentHero.IsMoved = false;
         }
-
-        #region drawstuff
+        private void DrawCharacter(Character character)
+        {
+            Console.SetCursorPosition(character.Coords.X + MapBorder.Offset.X, character.Coords.Y + MapBorder.Offset.Y);
+            Console.Write(character.Symbol);
+        }
+        private void RedrawCharacter(Character character)
+        {
+            //must not redraw when character coords is out of current console size 
+            DrawCharacter(character);
+            Console.SetCursorPosition(character.PrevCoords.X + MapBorder.Offset.X, character.PrevCoords.Y + MapBorder.Offset.Y);
+            Console.Write(Map.WorldAscii[character.PrevCoords.Y + Map.Offset.Y][character.PrevCoords.X + Map.Offset.X]);
+        }
         private void Redraw()
         {
-            Console.SetCursorPosition(CurrentHero.Coords.X + MapBorder.Offset.X, CurrentHero.Coords.Y + MapBorder.Offset.Y);
-            Console.Write("@");
-            Console.SetCursorPosition(CurrentHero.PrevCoords.X + MapBorder.Offset.X, CurrentHero.PrevCoords.Y + MapBorder.Offset.Y);
-            Console.Write(Map.WorldAscii[CurrentHero.PrevCoords.Y + Map.Offset.Y][CurrentHero.PrevCoords.X + Map.Offset.X]);
+            RedrawCharacter(CurrentHero);
+            //loop over list of monsters
+            RedrawCharacter(TmpMonster);
         }
 
         private void Draw()
@@ -123,8 +140,9 @@ namespace Roguelike
                  Map.WorldAscii[i].Substring(Map.Offset.X);
                 Console.WriteLine(mapstr);
             }
-            Console.SetCursorPosition(CurrentHero.Coords.X + MapBorder.Offset.X, CurrentHero.Coords.Y + MapBorder.Offset.Y);
-            Console.Write("@");
+            DrawCharacter(CurrentHero);
+            //loop over list of monsters
+            DrawCharacter(TmpMonster);
         }
 
         private void DrawAllBorders()
@@ -184,20 +202,12 @@ namespace Roguelike
             Console.SetCursorPosition(location.X + width - 1, location.Y + height - 1);
             Console.Write("╝");
         }
-        #endregion
-
         public char GetMapSymbol(Point point)
         {
             char symbol = Map.WorldAscii[point.Y + Map.Offset.Y][point.X + Map.Offset.X];
             return symbol;
         }
-
-        public void StartMenu()
-        {
-            StartingMenu startingMenu = new StartingMenu();
-            startingMenu.Process();
-        }
-
+        #endregion
         public void PlayGame()
         {
             Console.Clear();
@@ -214,13 +224,12 @@ namespace Roguelike
                 }
                 ConsoleWidth = Console.WindowWidth;
                 ConsoleHeight = Console.WindowHeight;
-
+                
                 Input();
                 Logic();
-                if (CurrentHero.PrevCoords.X != CurrentHero.Coords.X
-                || CurrentHero.PrevCoords.Y != CurrentHero.Coords.Y)
+                if (CurrentHero.IsMoved)
                     Redraw();
-                    //need to Redraw() not only when PrevCoords!=Coords.
+                    //need to Redraw() not only when CurrentHero doesn't move
                     //For example, if we just killed a monster
             }
         }

@@ -7,16 +7,18 @@ namespace Roguelike
 {
     class Hero : Character
     {
-        public Hero(Point coords, int hitPoints, int expPoints, Hero.Speed speed, string name)
+        public Hero(Point coords, int hitPoints, int expPoints, int rangeOfVision, Character.Speed speed, string name)
         {
             Coords = coords;
             PrevCoords = new Point(coords.X, coords.Y);
             HitPoints = hitPoints; //should depend on class/hit dices
             ExpPoints = expPoints;
+            RangeOfVision = rangeOfVision;
             CurrentSpeed = speed;
             Name = name;
+            Symbol = '@';
+            IsMoved = false;
         }
-        public int ExpPoints { get; set; }
         public enum GameAction
         {
             OpenInventory = ConsoleKey.E,
@@ -24,7 +26,7 @@ namespace Roguelike
             Exit = ConsoleKey.Escape,
             Attack,
             DropItem
-        }        public GameAction CurrentGameAction { get; set; }        public void DoGameAction()
+        }        public int ExpPoints { get; set; }        public GameAction CurrentGameAction { get; set; }        public void DoGameAction()
         {
             switch (CurrentGameAction)
             {
@@ -32,9 +34,13 @@ namespace Roguelike
                     //OpenInventory(Hero.Inventory)
                     //Hero.Inventory is a list, containing many lists of
                     //weapon, armor, potion and so on..
+                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
+                    Console.WriteLine("You open an inventory");
                     break;
                 case GameAction.PickUpItem:
                     //Hero.AddItem(Item)
+                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
+                    Console.WriteLine("You pick up an item");
                     break;
                 case GameAction.Exit:
                     Program.GameEngine.StartMenu();
@@ -44,11 +50,15 @@ namespace Roguelike
                     break;
                 case GameAction.DropItem:
                     //drop item
+                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
+                    Console.WriteLine("You drop an item");
                     break;
                 default:
+                    //Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
+                    //Console.WriteLine("You do nothing");
                     break;
             }
-        }        protected override bool HandleCollisions(char clashedSymbol)
+        }        protected override bool HandleCollisions(char clashedSymbol)
         {
             switch (clashedSymbol)
             {
