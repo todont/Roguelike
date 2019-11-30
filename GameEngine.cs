@@ -65,10 +65,10 @@ namespace Roguelike
 
         private void MoveMap()
         {
-            int distToTop = CurrentHero.Coords.Y + 1;
-            int distToLeft = CurrentHero.Coords.X + 1;
-            int distToRight = MapBorder.Width - CurrentHero.Coords.X - 2;
-            int distToBot = MapBorder.Height - 2 - CurrentHero.Coords.Y;
+            int distToTop = CurrentHero.Coords.Y - Map.Offset.Y + 1;
+            int distToLeft = CurrentHero.Coords.X - Map.Offset.X + 1;
+            int distToRight = MapBorder.Width - CurrentHero.Coords.X + Map.Offset.X - 2;
+            int distToBot = MapBorder.Height - 2 - CurrentHero.Coords.Y + Map.Offset.Y;
             int critDistHor = MapBorder.Width / 8;
             int critDistVert = MapBorder.Height / 8;
             if (distToTop <= critDistVert)
@@ -105,21 +105,33 @@ namespace Roguelike
                     Map.Offset.X = offset - 1 >= 0 ? offset - 1 : offset;
                     break;
             }
-            CurrentHero.RestoreCoords();
+            //CurrentHero.RestoreCoords();
             Draw();
             CurrentHero.IsMoved = false;
         }
         private void DrawCharacter(Character character)
         {
-            Console.SetCursorPosition(character.Coords.X + MapBorder.Offset.X, character.Coords.Y + MapBorder.Offset.Y);
-            Console.Write(character.Symbol);
+            int left = character.Coords.X - Map.Offset.X + MapBorder.Offset.X;
+            int top = character.Coords.Y - Map.Offset.Y + MapBorder.Offset.Y;
+            if (left >= MapBorder.Offset.X && left <= MapBorder.Offset.X + MapBorder.Width - 3 &&
+                top >= MapBorder.Offset.Y && top <= MapBorder.Offset.Y + MapBorder.Height - 3)
+            {
+                Console.SetCursorPosition(left, top);
+                Console.Write(character.Symbol);
+            }
         }
         private void RedrawCharacter(Character character)
         {
             //must not redraw when character coords is out of current console size 
             DrawCharacter(character);
-            Console.SetCursorPosition(character.PrevCoords.X + MapBorder.Offset.X, character.PrevCoords.Y + MapBorder.Offset.Y);
-            Console.Write(Map.WorldAscii[character.PrevCoords.Y + Map.Offset.Y][character.PrevCoords.X + Map.Offset.X]);
+            int left = character.PrevCoords.X - Map.Offset.X + MapBorder.Offset.X;
+            int top = character.PrevCoords.Y - Map.Offset.Y + MapBorder.Offset.Y;
+            if (left >= MapBorder.Offset.X && left <= MapBorder.Offset.X + MapBorder.Width - 3 &&
+                top >= MapBorder.Offset.Y && top <= MapBorder.Offset.Y + MapBorder.Height - 3)
+            {
+                Console.SetCursorPosition(left, top);
+                Console.Write(Map.WorldAscii[character.PrevCoords.Y][character.PrevCoords.X]);
+            }
         }
         private void Redraw()
         {
@@ -204,10 +216,24 @@ namespace Roguelike
         }
         public char GetMapSymbol(Point point)
         {
-            char symbol = Map.WorldAscii[point.Y + Map.Offset.Y][point.X + Map.Offset.X];
+            char symbol = Map.WorldAscii[point.Y][point.X];
             return symbol;
         }
         #endregion
+
+        private void HandleConsoleResize()
+        {
+            if (ConsoleWidth != Console.WindowWidth || ConsoleHeight != Console.WindowHeight)
+            {
+                Console.CursorVisible = false;
+                Console.Clear();
+                DrawAllBorders();
+                Draw();
+            }
+            ConsoleWidth = Console.WindowWidth;
+            ConsoleHeight = Console.WindowHeight;
+        }
+
         public void PlayGame()
         {
             Console.Clear();
@@ -215,15 +241,7 @@ namespace Roguelike
             Draw();
             while (!GameOver)
             {
-                if (ConsoleWidth != Console.WindowWidth || ConsoleHeight != Console.WindowHeight)
-                {
-                    Console.CursorVisible = false;
-                    Console.Clear();
-                    DrawAllBorders();
-                    Draw();
-                }
-                ConsoleWidth = Console.WindowWidth;
-                ConsoleHeight = Console.WindowHeight;
+                HandleConsoleResize();
                 
                 Input();
                 Logic();
