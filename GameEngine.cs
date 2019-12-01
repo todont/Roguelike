@@ -147,7 +147,7 @@ namespace Roguelike
             for (int i = Map.Offset.Y, j = 0; j < MapBorder.Height - 2 && i < Map.WorldAscii.Length; i++, j++)
             {
                 Console.SetCursorPosition(MapBorder.Offset.X, MapBorder.Offset.Y + j);
-                string mapstr = Map.WorldAscii[i].Length > MapBorder.Width - 2 ?
+                string mapstr = Map.WorldAscii[i].Length > Map.Offset.X + MapBorder.Width - 2 ?
                  Map.WorldAscii[i].Substring(Map.Offset.X, MapBorder.Width - 2) :
                  Map.WorldAscii[i].Substring(Map.Offset.X);
                 Console.WriteLine(mapstr);
