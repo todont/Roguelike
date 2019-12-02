@@ -24,6 +24,7 @@ namespace Roguelike
             OpenInventory = ConsoleKey.E,
             PickUpItem = ConsoleKey.G,
             Exit = ConsoleKey.Escape,
+            InspectMap = ConsoleKey.M,
             Attack,
             DropItem
         }        public int ExpPoints { get; set; }        public GameAction CurrentGameAction { get; set; }        public void DoGameAction()
@@ -52,6 +53,11 @@ namespace Roguelike
                     //drop item
                     Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
                     Console.WriteLine("You drop an item");
+                    break;
+                case GameAction.InspectMap:
+                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
+                    Console.WriteLine("You explore the map");
+                    Program.GameEngine.InspectMap();
                     break;
                 default:
                     //Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);

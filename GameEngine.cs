@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using CaveGenerator;
 
 namespace Roguelike
@@ -27,13 +28,23 @@ namespace Roguelike
             CurrentHero = new Hero(new Point(12, 10), 15, 0, 20, Character.Speed.Normal, "Chiks-Chiriks");
             TmpMonster = new Monster(new Point(15, 15), 10, 10, Character.Speed.Normal, "Snake", 'S');
             GameStarted = true;
+            ConsoleHeight = Console.WindowHeight;
+            ConsoleWidth = Console.WindowWidth;
         }
 
         private void Input()
         {
             var key = Console.ReadKey(true).Key;
-            CurrentHero.CurrentMoveAction = (Character.MoveAction)key;
+            CurrentHero.CurrentMoveAction = (BaseCharacter.MoveAction)key;
             CurrentHero.CurrentGameAction = (Hero.GameAction)key;
+        }
+
+        private bool Input(MapInspector inspector)
+        {
+            var key = Console.ReadKey(true).Key;
+            if (key == ConsoleKey.M) return false;
+            inspector.CurrentMoveAction = (BaseCharacter.MoveAction)key;
+            return true;
         }
 
         private void Logic()
@@ -45,16 +56,30 @@ namespace Roguelike
                 CurrentHero.DoGameAction();
                 return;
             }
-            TmpMonster.CurrentMoveAction = (Character.MoveAction)GameRandom.Next(37, 41);
+            TmpMonster.CurrentMoveAction = (BaseCharacter.MoveAction)GameRandom.Next(37, 41);
             TmpMonster.Move();
-            MoveMap();
+            MoveMap(CurrentHero);
         }
         public void StartMenu()
         {
             StartingMenu startingMenu = new StartingMenu();
             startingMenu.Process();
         }
-        #region drawstuff
+
+        public void InspectMap()
+        {
+            MapInspector inspector = new MapInspector("Inspector", new Point(CurrentHero.Coords.X, CurrentHero.Coords.Y));
+            char symbol = CurrentHero.Symbol;
+            while (true)
+            {
+                RedrawInspector(inspector, symbol);
+                if (!Input(inspector)) break;
+                inspector.Move();
+                MoveMap(inspector);
+                symbol = GetMapSymbol(new Point(inspector.Coords.X, inspector.Coords.Y));
+            }
+        }
+
         enum MapMoveDirection
         {
             Top,
@@ -63,12 +88,12 @@ namespace Roguelike
             Right
         }
 
-        private void MoveMap()
+        private void MoveMap(BaseCharacter baseCharacter)
         {
-            int distToTop = CurrentHero.Coords.Y - Map.Offset.Y + 1;
-            int distToLeft = CurrentHero.Coords.X - Map.Offset.X + 1;
-            int distToRight = MapBorder.Width - CurrentHero.Coords.X + Map.Offset.X - 2;
-            int distToBot = MapBorder.Height - 2 - CurrentHero.Coords.Y + Map.Offset.Y;
+            int distToTop = baseCharacter.Coords.Y - Map.Offset.Y + 1;
+            int distToLeft = baseCharacter.Coords.X - Map.Offset.X + 1;
+            int distToRight = MapBorder.Width - baseCharacter.Coords.X + Map.Offset.X - 2;
+            int distToBot = MapBorder.Height - 2 - baseCharacter.Coords.Y + Map.Offset.Y;
             int critDistHor = MapBorder.Width / 8;
             int critDistVert = MapBorder.Height / 8;
             if (distToTop <= critDistVert)
@@ -109,6 +134,26 @@ namespace Roguelike
             Draw();
             CurrentHero.IsMoved = false;
         }
+
+        #region drawstuff
+
+        private void RedrawInspector(MapInspector inspector, char symbol)
+        {
+            int left = inspector.Coords.X;
+            int top = inspector.Coords.Y;
+            Console.SetCursorPosition(1, 1);
+            Console.WriteLine(symbol);
+            while (!Console.KeyAvailable)
+            {
+                Console.SetCursorPosition(left - Map.Offset.X + MapBorder.Offset.X, top - Map.Offset. Y + MapBorder.Offset.Y);
+                Console.Write(' ');
+                Thread.Sleep(200);
+                Console.SetCursorPosition(left - Map.Offset.X + MapBorder.Offset.X, top - Map.Offset.Y + MapBorder.Offset.Y);
+                Console.Write(symbol);
+                Thread.Sleep(200);
+            }
+        }
+
         private void DrawCharacter(Character character)
         {
             int left = character.Coords.X - Map.Offset.X + MapBorder.Offset.X;
@@ -214,12 +259,24 @@ namespace Roguelike
             Console.SetCursorPosition(location.X + width - 1, location.Y + height - 1);
             Console.Write("╝");
         }
+
+        #endregion
+
+        public int GetMapHeight()
+        {
+            return Map.MapSize.Height;
+        }
+
+        public int GetMapWidth()
+        {
+            return Map.MapSize.Width;
+        }
+
         public char GetMapSymbol(Point point)
         {
             char symbol = Map.WorldAscii[point.Y][point.X];
             return symbol;
         }
-        #endregion
 
         private void HandleConsoleResize()
         {
@@ -228,6 +285,10 @@ namespace Roguelike
                 Console.CursorVisible = false;
                 Console.Clear();
                 DrawAllBorders();
+                Map.Offset.X = CurrentHero.Coords.X - MapBorder.Width / 2 >= 0 ?
+                                CurrentHero.Coords.X - MapBorder.Width / 2 : 0;
+                Map.Offset.Y = CurrentHero.Coords.Y - MapBorder.Height / 2 >= 0 ?
+                                CurrentHero.Coords.Y - MapBorder.Height / 2 : 0;
                 Draw();
             }
             ConsoleWidth = Console.WindowWidth;
@@ -241,14 +302,13 @@ namespace Roguelike
             Draw();
             while (!GameOver)
             {
-                HandleConsoleResize();
-                
                 Input();
+                HandleConsoleResize();
                 Logic();
                 if (CurrentHero.IsMoved)
                     Redraw();
-                    //need to Redraw() not only when CurrentHero doesn't move
-                    //For example, if we just killed a monster
+                //need to Redraw() not only when CurrentHero doesn't move
+                //For example, if we just killed a monster
             }
         }
     }
