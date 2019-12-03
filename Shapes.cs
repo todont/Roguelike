@@ -16,6 +16,16 @@ namespace Roguelike
             Y = y;
         }
         public Point() { }
+
+        public bool IsPointEqual(Point x, Point y)
+        {
+            return ((x.X == y.X) && (x.Y == y.Y));
+        }
+        public void SetValue(int x, int y)
+        {
+            this.X = x;
+            this.Y = y;
+        }
     }
 
     class Rectangle
