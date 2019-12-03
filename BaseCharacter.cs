@@ -67,21 +67,7 @@ namespace Roguelike
 
         public virtual void Move() //sets IsMoved
         {
-            switch (CurrentMoveAction)
-            {
-                case MoveAction.Up:
-                    SetPrevPlusMove(MoveAction.Up);
-                    break;
-                case MoveAction.Down:
-                    SetPrevPlusMove(MoveAction.Down);
-                    break;
-                case MoveAction.Left:
-                    SetPrevPlusMove(MoveAction.Left);
-                    break;
-                case MoveAction.Right:
-                    SetPrevPlusMove(MoveAction.Right);
-                    break;
-            }
+            SetPrevPlusMove(CurrentMoveAction);
         }
     }
 }
