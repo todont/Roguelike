@@ -277,6 +277,12 @@ namespace Roguelike
             char symbol = Map.WorldAscii[point.Y][point.X];
             return symbol;
         }
+        public char GetEntitySymbol(Point point)
+        {
+            //list over all entities
+            char tmpsymbol = 'S';
+            return tmpsymbol;
+        }
 
         private void HandleConsoleResize()
         {
