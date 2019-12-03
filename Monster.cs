@@ -26,9 +26,9 @@ namespace Roguelike
             Attack
         }
         public GameAction CurrentGameAction { get; set; }
-        protected override bool HandleCollisions(char clashedSymbol)
+        protected override bool HandleCollisions(char mapSymbol, char entitySymbol)
         {
-            switch (clashedSymbol)
+            switch (mapSymbol)
             {
                 case '▒':
                     return false;

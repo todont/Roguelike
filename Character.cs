@@ -18,26 +18,35 @@ namespace Roguelike
         public int RangeOfVision { get; set; }
         public char Symbol { get; set; }
         public bool IsMoved { get; set; }
-        protected abstract bool HandleCollisions(char clashedSymbol);
+        protected abstract bool HandleCollisions(char mapSymbol, char entitySymbol);
         //sets CurrentGameAction, returns true if we can move, otherwise - false
         public override void Move() //sets IsMoved
         {
+            Point tmp = new Point();
             switch (CurrentMoveAction)
             {
                 case MoveAction.Up:
-                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y - 1)));
+                    tmp.SetValue(Coords.X, Coords.Y - 1);
+                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(tmp),
+                                               Program.GameEngine.GetEntitySymbol(tmp));
                     if (IsMoved) SetPrevPlusMove(MoveAction.Up);
                     break;
                 case MoveAction.Down:
-                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y + 1)));
+                    tmp.SetValue(Coords.X, Coords.Y + 1);
+                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(tmp),
+                                               Program.GameEngine.GetEntitySymbol(tmp));
                     if (IsMoved) SetPrevPlusMove(MoveAction.Down);
                     break;
                 case MoveAction.Left:
-                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X - 1, Coords.Y)));
+                    tmp.SetValue(Coords.X - 1, Coords.Y);
+                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(tmp),
+                                               Program.GameEngine.GetEntitySymbol(tmp));
                     if (IsMoved) SetPrevPlusMove(MoveAction.Left);
                     break;
                 case MoveAction.Right:
-                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X + 1, Coords.Y)));
+                    tmp.SetValue(Coords.X + 1, Coords.Y);
+                    IsMoved = HandleCollisions(Program.GameEngine.GetMapSymbol(tmp),
+                                               Program.GameEngine.GetEntitySymbol(tmp));
                     if (IsMoved) SetPrevPlusMove(MoveAction.Right);
                     break;
                 default:
@@ -49,16 +58,28 @@ namespace Roguelike
                 switch (CurrentMoveAction)
                 {
                     case MoveAction.Up:
-                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y - 1)))) MoveUp();
+                        tmp.SetValue(Coords.X, Coords.Y - 1);
+                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(tmp),
+                                             Program.GameEngine.GetEntitySymbol(tmp)))
+                            MoveUp();
                         break;
                     case MoveAction.Down:
-                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X, Coords.Y + 1)))) MoveDown();
+                        tmp.SetValue(Coords.X, Coords.Y + 1);
+                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(tmp),
+                                             Program.GameEngine.GetEntitySymbol(tmp)))
+                            MoveDown();
                         break;
                     case MoveAction.Left:
-                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X - 1, Coords.Y)))) MoveLeft();
+                        tmp.SetValue(Coords.X - 1, Coords.Y);
+                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(tmp),
+                                             Program.GameEngine.GetEntitySymbol(tmp)))
+                            MoveLeft();
                         break;
                     case MoveAction.Right:
-                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(new Point(Coords.X + 1, Coords.Y)))) MoveRight();
+                        tmp.SetValue(Coords.X + 1, Coords.Y);
+                        if (HandleCollisions(Program.GameEngine.GetMapSymbol(tmp),
+                                             Program.GameEngine.GetEntitySymbol(tmp)))
+                            MoveRight();
                         break;
                 }
             }

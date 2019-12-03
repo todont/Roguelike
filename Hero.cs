@@ -64,9 +64,9 @@ namespace Roguelike
                     //Console.WriteLine("You do nothing");
                     break;
             }
-        }        protected override bool HandleCollisions(char clashedSymbol)
+        }        protected override bool HandleCollisions(char mapSymbol, char entitySymbol)
         {
-            switch (clashedSymbol)
+            switch (mapSymbol)
             {
                 case '▒':
                     //make this as log function that depends on symbol we switching
