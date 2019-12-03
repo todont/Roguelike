@@ -58,6 +58,7 @@
     <Compile Include="MenuItem.cs" />
     <Compile Include="BaseCharacter.cs" />
     <Compile Include="MapInspector.cs" />
+    <Compile Include="BaseEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
