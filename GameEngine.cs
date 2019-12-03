@@ -73,7 +73,12 @@ namespace Roguelike
             while (true)
             {
                 RedrawInspector(inspector, symbol);
-                if (!Input(inspector)) break;
+                if (!Input(inspector))
+                {
+                    SetMapOffset();
+                    Draw();
+                    break;
+                }
                 inspector.Move();
                 MoveMap(inspector);
                 symbol = GetMapSymbol(new Point(inspector.Coords.X, inspector.Coords.Y));
@@ -130,9 +135,15 @@ namespace Roguelike
                     Map.Offset.X = offset - 1 >= 0 ? offset - 1 : offset;
                     break;
             }
-            //CurrentHero.RestoreCoords();
             Draw();
-            CurrentHero.IsMoved = false;
+        }
+
+        private void SetMapOffset()
+        {
+            Map.Offset.X = CurrentHero.Coords.X - MapBorder.Width / 2 >= 0 ?
+                                CurrentHero.Coords.X - MapBorder.Width / 2 : 0;
+            Map.Offset.Y = CurrentHero.Coords.Y - MapBorder.Height / 2 >= 0 ?
+                            CurrentHero.Coords.Y - MapBorder.Height / 2 : 0;
         }
 
         #region drawstuff
@@ -291,10 +302,7 @@ namespace Roguelike
                 Console.CursorVisible = false;
                 Console.Clear();
                 DrawAllBorders();
-                Map.Offset.X = CurrentHero.Coords.X - MapBorder.Width / 2 >= 0 ?
-                                CurrentHero.Coords.X - MapBorder.Width / 2 : 0;
-                Map.Offset.Y = CurrentHero.Coords.Y - MapBorder.Height / 2 >= 0 ?
-                                CurrentHero.Coords.Y - MapBorder.Height / 2 : 0;
+                SetMapOffset();
                 Draw();
             }
             ConsoleWidth = Console.WindowWidth;
