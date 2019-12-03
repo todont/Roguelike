@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Roguelike
 {
-    class BaseCharacter
+    class BaseCharacter : BaseEntity
     {
         public enum MoveAction
         {
@@ -11,9 +11,6 @@ namespace Roguelike
             Left = ConsoleKey.LeftArrow
         }
 
-        public string Name { get; set; }
-        public Point Coords { get; set; }
-        public Point PrevCoords { get; set; }
         public MoveAction CurrentMoveAction { get; set; }
 
         public void MoveUp()

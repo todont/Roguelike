@@ -16,7 +16,6 @@ namespace Roguelike
         public Speed CurrentSpeed { get; set; }
         public int HitPoints { get; set; }
         public int RangeOfVision { get; set; }
-        public char Symbol { get; set; }
         public bool IsMoved { get; set; }
         protected abstract bool HandleCollisions(char mapSymbol, char entitySymbol);
         //sets CurrentGameAction, returns true if we can move, otherwise - false
