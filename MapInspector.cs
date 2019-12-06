@@ -23,7 +23,7 @@ namespace Roguelike
                     if (Coords.Y + 1 < mapHeight) SetPrevPlusMove(MoveAction.Down);
                     break;
                 case MoveAction.Left:
-                    if (Coords.X >= 0) SetPrevPlusMove(MoveAction.Left);
+                    if (Coords.X > 0) SetPrevPlusMove(MoveAction.Left);
                     break;
                 case MoveAction.Right:
                     if (Coords.X < mapWidth - 1) SetPrevPlusMove(MoveAction.Right);
