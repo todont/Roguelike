@@ -69,13 +69,15 @@ namespace Roguelike
 
         public void InspectMap()
         {
+            TileFactory factory = new TileFactory();
+
             Inspector.IsInspect = true;
             Inspector.Coords.SetValue(CurrentHero.Coords);
             char symbol = CurrentHero.Symbol;
-            Tile tile;
+            TileFlyweight tile;
             while (Inspector.IsInspect)
             {
-                tile = Map.TileMap[Inspector.Coords.Y, Inspector.Coords.X];
+                tile = factory.GetTile((TileFlyweight.Type)Map.Map[Inspector.Coords.Y, Inspector.Coords.X]);
                 symbol = tile.Symbol;
 
                 Console.SetCursorPosition(InfoBorder.Offset.X, InfoBorder.Offset.Y);
