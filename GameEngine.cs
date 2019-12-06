@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using CaveGenerator;
@@ -14,10 +15,10 @@ namespace Roguelike
         public Rectangle HeroInfoBorder { get; set; }
         public Rectangle MapBorder { get; set; }
         public Rectangle InfoBorder { get; set; }
+        public Random GameRandom = new Random();
         private int ConsoleHeight = 0;
         private int ConsoleWidth = 0;
         private Monster TmpMonster; //make this as list
-        private Random GameRandom = new Random();
         public void Init()
         {
             Map = new Cave();
@@ -56,8 +57,7 @@ namespace Roguelike
                 CurrentHero.DoGameAction();
                 return;
             }
-            TmpMonster.CurrentMoveAction = (BaseCharacter.MoveAction)GameRandom.Next(37, 41);
-            TmpMonster.Move();
+            TmpMonster.MoveTo(CurrentHero);
             MoveMap(CurrentHero);
         }
         public void StartMenu()
