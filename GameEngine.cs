@@ -9,6 +9,7 @@ namespace Roguelike
     class GameEngine
     {
         private Hero CurrentHero;
+        private MapInspector Inspector;
         private bool GameOver = false;
         public bool GameStarted { get; private set; }
         private Cave Map;
@@ -28,6 +29,7 @@ namespace Roguelike
             Map.Offset = new Point(0, 0);
             CurrentHero = new Hero(new Point(12, 10), 15, 0, 20, Character.Speed.Normal, "Chiks-Chiriks");
             TmpMonster = new Monster(new Point(15, 15), 10, 10, Character.Speed.Normal, "Snake", 'S');
+            Inspector = new MapInspector("Inspector", new Point(CurrentHero.Coords.X, CurrentHero.Coords.Y));
             GameStarted = true;
             ConsoleHeight = Console.WindowHeight;
             ConsoleWidth = Console.WindowWidth;
@@ -40,12 +42,11 @@ namespace Roguelike
             CurrentHero.CurrentGameAction = (Hero.GameAction)key;
         }
 
-        private bool Input(MapInspector inspector)
+        private void Input(MapInspector inspector)
         {
             var key = Console.ReadKey(true).Key;
-            if (key == ConsoleKey.M) return false;
+            if (key == ConsoleKey.M) inspector.IsInspect = false;
             inspector.CurrentMoveAction = (BaseCharacter.MoveAction)key;
-            return true;
         }
 
         private void Logic()
@@ -68,20 +69,31 @@ namespace Roguelike
 
         public void InspectMap()
         {
-            MapInspector inspector = new MapInspector("Inspector", new Point(CurrentHero.Coords.X, CurrentHero.Coords.Y));
+            Inspector.IsInspect = true;
+            Inspector.Coords.SetValue(CurrentHero.Coords);
             char symbol = CurrentHero.Symbol;
-            while (true)
+            Tile tile;
+            while (Inspector.IsInspect)
             {
-                RedrawInspector(inspector, symbol);
-                if (!Input(inspector))
+                tile = Map.TileMap[Inspector.Coords.Y, Inspector.Coords.X];
+                symbol = tile.Symbol;
+
+                Console.SetCursorPosition(InfoBorder.Offset.X, InfoBorder.Offset.Y);
+                Console.WriteLine(new string(' ', 20));
+                Console.SetCursorPosition(InfoBorder.Offset.X, InfoBorder.Offset.Y);
+                Console.WriteLine($"{tile.Description}: {tile.Symbol}");
+
+                RedrawInspector(symbol);
+                Input(Inspector);
+                HandleConsoleResize();
+                if (!Inspector.IsInspect)
                 {
                     SetMapOffset();
                     Draw();
                     break;
                 }
-                inspector.Move();
-                MoveMap(inspector);
-                symbol = GetMapSymbol(new Point(inspector.Coords.X, inspector.Coords.Y));
+                Inspector.Move();
+                MoveMap(Inspector);
             }
         }
 
@@ -148,21 +160,34 @@ namespace Roguelike
 
         #region drawstuff
 
-        private void RedrawInspector(MapInspector inspector, char symbol)
+        private void RedrawInspector(char symbol)
         {
-            int left = inspector.Coords.X;
-            int top = inspector.Coords.Y;
-            Console.SetCursorPosition(1, 1);
-            Console.WriteLine(symbol);
-            while (!Console.KeyAvailable)
+            int left = Inspector.Coords.X;
+            int top = Inspector.Coords.Y;
+            HandleConsoleResize();
+            while (!Console.KeyAvailable && Inspector.IsInspect)
             {
+                HandleConsoleResize();
+                if (!Inspector.IsInspect) break;
+
                 Console.SetCursorPosition(left - Map.Offset.X + MapBorder.Offset.X, top - Map.Offset. Y + MapBorder.Offset.Y);
                 Console.Write(' ');
-                Thread.Sleep(200);
+                Thread.Sleep(100);
+
+                HandleConsoleResize();
+                if (!Inspector.IsInspect) break;
+
                 Console.SetCursorPosition(left - Map.Offset.X + MapBorder.Offset.X, top - Map.Offset.Y + MapBorder.Offset.Y);
+                Console.BackgroundColor = ConsoleColor.DarkRed;
                 Console.Write(symbol);
-                Thread.Sleep(200);
+                Console.ResetColor();
+                Thread.Sleep(100);
             }
+            Console.ResetColor();
+            HandleConsoleResize();
+            if (!Inspector.IsInspect) return;
+            Console.SetCursorPosition(left - Map.Offset.X + MapBorder.Offset.X, top - Map.Offset.Y + MapBorder.Offset.Y);
+            Console.Write(symbol);
         }
 
         private void DrawCharacter(Character character)
@@ -299,6 +324,7 @@ namespace Roguelike
         {
             if (ConsoleWidth != Console.WindowWidth || ConsoleHeight != Console.WindowHeight)
             {
+                Inspector.IsInspect = false;
                 Console.CursorVisible = false;
                 Console.Clear();
                 DrawAllBorders();

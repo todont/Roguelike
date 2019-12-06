@@ -3,6 +3,8 @@ namespace Roguelike
 {
     class MapInspector : BaseCharacter
     {
+        public bool IsInspect { get; set; }
+
         public MapInspector(string name, Point coords)
         {
             Name = name;
