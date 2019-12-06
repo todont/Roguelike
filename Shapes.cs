@@ -26,6 +26,11 @@ namespace Roguelike
             this.X = x;
             this.Y = y;
         }
+        public void SetValue(Point point)
+        {
+            this.X = point.X;
+            this.Y = point.Y;
+        }
         public double GetDistance(Point x)
         {
             return Math.Sqrt(Math.Pow(x.X - this.X, 2) + Math.Pow(x.Y - this.Y, 2));
