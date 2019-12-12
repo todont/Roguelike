@@ -10,29 +10,15 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 
 namespace CaveGenerator
-<<<<<<< HEAD
 {   [DataContract]
-=======
-{
-
-    /// <summary>
-    /// csCaveGenerator - generate a cave system and connect the caves together.
-    /// </summary>
->>>>>>> parent of c829fd9... Prepearing for rewriting Map width flyweight pattern
     class Cave
     {
-
         private Random rnd;
-<<<<<<< HEAD
+
         [DataMember]
         public string[] WorldAscii { get; set; }
-        
-        public Roguelike.Tile WorldTile { get;}
+        public Roguelike.Tile WorldTile { get;} 
         [DataMember]
-=======
-
-        public string[] WorldAscii { get; private set; }
->>>>>>> parent of c829fd9... Prepearing for rewriting Map width flyweight pattern
         public Roguelike.Point Offset { get; set; }
         #region properties
 
@@ -140,15 +126,11 @@ namespace CaveGenerator
         public void WriteMapIntoFile()
         {
             int worldHeight = Map.GetLength(0);
-<<<<<<< HEAD
             int worldWidth = Map[0].GetLength(0);
             for (int x = 0; x < MapSize.Width; x++)
                 for (int y = 0; y < MapSize.Height; y++)
                     if (x == 0 || x == MapSize.Width - 1 || y == 0 || y == MapSize.Height - 1)
                         Map[x][y] = 0 ;
-=======
-            int worldWidth = Map.GetLength(1);
->>>>>>> parent of c829fd9... Prepearing for rewriting Map width flyweight pattern
             WorldAscii = new string[worldHeight];
             StringBuilder[] builder = new StringBuilder[worldHeight];
             for (var x = 0; x < worldHeight; x++)
@@ -171,7 +153,6 @@ namespace CaveGenerator
             {
                 WorldAscii[i] = builder[i].ToString();
             }
-            File.WriteAllLines("Locations/location1.txt", WorldAscii);
         }
 
         public int Build()

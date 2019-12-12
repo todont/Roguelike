@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -135,27 +135,16 @@ namespace Roguelike
         {
             Inspector.IsInspect = true;
             Inspector.Coords.SetValue(CurrentHero.Coords);
-<<<<<<< HEAD
+
             //char symbol = CurrentHero.Symbol;
             TileFlyweight tile;
             while (Inspector.IsInspect)
             {
                 tile = factory.GetTile((TileFlyweight.Type)Map.Map[Inspector.Coords.Y] [Inspector.Coords.X]);
-                //symbol = tile.Symbol;
-=======
-            char symbol = CurrentHero.Symbol;
-            Tile tile;
-            while (Inspector.IsInspect)
-            {
-                tile = Map.TileMap[Inspector.Coords.Y, Inspector.Coords.X];
-                symbol = tile.Symbol;
-
->>>>>>> parent of c829fd9... Prepearing for rewriting Map width flyweight pattern
                 Console.SetCursorPosition(InfoBorder.Offset.X, InfoBorder.Offset.Y);
                 Console.WriteLine(new string(' ', 20));
                 Console.SetCursorPosition(InfoBorder.Offset.X, InfoBorder.Offset.Y);
                 Console.WriteLine($"{tile.Description}: {tile.Symbol}");
-
                 RedrawInspector(tile.Symbol);
                 Input(Inspector);
                 HandleConsoleResize();

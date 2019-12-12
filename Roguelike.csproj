@@ -63,6 +63,9 @@
     <Compile Include="BaseCharacter.cs" />
     <Compile Include="MapInspector.cs" />
     <Compile Include="BaseEntity.cs" />
+    <Compile Include="TileFlyweight.cs" />
+    <Compile Include="TileFactory.cs" />
+    <Compile Include="Tile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
