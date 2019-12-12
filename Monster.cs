@@ -30,6 +30,7 @@ namespace Roguelike
         }
         //Tile MonsterTile (color and shape of 
         // symbol that represents monster)
+
         [DataMember]
         private double ChanceToGoUp;
         [DataMember]
