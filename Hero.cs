@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading.Tasks;using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 namespace Roguelike
-{
+{   [DataContract]
     class Hero : Character
     {
         public Hero(Point coords, int hitPoints, int expPoints, int rangeOfVision, Character.Speed speed, string name)
@@ -19,6 +21,7 @@ namespace Roguelike
             Symbol = '@';
             IsMoved = false;
         }
+        public Hero() { }
         public enum GameAction
         {
             OpenInventory = ConsoleKey.E,
@@ -27,7 +30,7 @@ namespace Roguelike
             InspectMap = ConsoleKey.M,
             Attack,
             DropItem
-        }        public int ExpPoints { get; set; }        public GameAction CurrentGameAction { get; set; }        public void DoGameAction()
+        }        [DataMember]        public int ExpPoints { get; set; }        public GameAction CurrentGameAction { get; set; }        public void DoGameAction()
         {
             switch (CurrentGameAction)
             {

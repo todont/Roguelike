@@ -1,23 +1,87 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using CaveGenerator;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace Roguelike
-{
-    class GameEngine
-    {
+{   [Serializable]
+    [KnownType(typeof(Hero))]
+    [KnownType(typeof(Cave))]
+    [KnownType(typeof(Monster))]
+    [KnownType(typeof(Rectangle))]
+    class GameEngine : ISerializable
+    {   [DataMember]
         private Hero CurrentHero;
+        [NonSerialized]
+        private MapInspector Inspector;
+        [NonSerialized]
         private bool GameOver = false;
+        [JsonIgnore]
         public bool GameStarted { get; private set; }
+        [DataMember]
         private Cave Map;
+        [DataMember]
         public Rectangle HeroInfoBorder { get; set; }
+        [DataMember]
         public Rectangle MapBorder { get; set; }
+        [DataMember]
         public Rectangle InfoBorder { get; set; }
+        [JsonIgnore]
+        public Random GameRandom = new Random();
+        [DataMember]
         private int ConsoleHeight = 0;
+        [DataMember]
         private int ConsoleWidth = 0;
+        [DataMember]
         private Monster TmpMonster; //make this as list
-        private Random GameRandom = new Random();
+        public GameEngine(){}
+        public GameEngine(SerializationInfo info, StreamingContext context)
+        {
+            this.CurrentHero = (Hero)info.GetValue("CurrentHero", typeof(Hero));
+            this.HeroInfoBorder = (Rectangle)info.GetValue("HeroInfoBorder", typeof(Rectangle));
+            this.Map = (Cave)info.GetValue("Map", typeof(Cave));
+            this.MapBorder = (Rectangle)info.GetValue("MapBorder", typeof(Rectangle));
+            this.InfoBorder = (Rectangle)info.GetValue("InfoBorder", typeof(Rectangle));
+            this.ConsoleHeight = (int)info.GetValue("ConsoleH", typeof(int));
+            this.ConsoleWidth = (int)info.GetValue("ConsoleW", typeof(int));
+            this.TmpMonster = (Monster)info.GetValue("TmpMonster", typeof(Monster));
+        }
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("CurrentHero", this.CurrentHero);
+            info.AddValue("Map", this.Map);
+            info.AddValue("HeroInfoBorder", this.HeroInfoBorder);
+            info.AddValue("MapBorder", this.MapBorder);
+            info.AddValue("InfoBorder", this.InfoBorder);
+            info.AddValue("ConsoleH", this.ConsoleHeight);
+            info.AddValue("ConsoleW", this.ConsoleWidth);
+            info.AddValue("TmpMonster", this.TmpMonster);
+        }
+        public void InitFromSave()
+        {
+            FileStream buffer = File.OpenRead("C:\\save1.txt");
+            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(GameEngine));
+            GameEngine tmpengine = jsonSerializer.ReadObject(buffer) as GameEngine;
+            CurrentHero = tmpengine.CurrentHero;
+            Map = tmpengine.Map;
+            buffer.Close();
+            TmpMonster = tmpengine.TmpMonster;
+            Inspector = new MapInspector("Inspector", new Point(CurrentHero.Coords.X, CurrentHero.Coords.Y));
+            GameStarted = true;
+            ConsoleHeight = tmpengine.ConsoleHeight;
+            ConsoleWidth = tmpengine.ConsoleHeight;
+        }
+        public void Save()
+        {
+            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(GameEngine));
+            FileStream buffer = File.Create("C:\\Save1.txt");
+            jsonSerializer.WriteObject(buffer,this);
+            buffer.Close();
+        }
         public void Init()
         {
             Map = new Cave();
@@ -27,6 +91,7 @@ namespace Roguelike
             Map.Offset = new Point(0, 0);
             CurrentHero = new Hero(new Point(12, 10), 15, 0, 20, Character.Speed.Normal, "Chiks-Chiriks");
             TmpMonster = new Monster(new Point(15, 15), 10, 10, Character.Speed.Normal, "Snake", 'S');
+            Inspector = new MapInspector("Inspector", new Point(CurrentHero.Coords.X, CurrentHero.Coords.Y));
             GameStarted = true;
             ConsoleHeight = Console.WindowHeight;
             ConsoleWidth = Console.WindowWidth;
@@ -39,12 +104,11 @@ namespace Roguelike
             CurrentHero.CurrentGameAction = (Hero.GameAction)key;
         }
 
-        private bool Input(MapInspector inspector)
+        private void Input(MapInspector inspector)
         {
             var key = Console.ReadKey(true).Key;
-            if (key == ConsoleKey.M) return false;
+            if (key == ConsoleKey.M) inspector.IsInspect = false;
             inspector.CurrentMoveAction = (BaseCharacter.MoveAction)key;
-            return true;
         }
 
         private void Logic()
@@ -56,8 +120,7 @@ namespace Roguelike
                 CurrentHero.DoGameAction();
                 return;
             }
-            TmpMonster.CurrentMoveAction = (BaseCharacter.MoveAction)GameRandom.Next(37, 41);
-            TmpMonster.Move();
+            TmpMonster.MoveTo(CurrentHero);
             MoveMap(CurrentHero);
         }
         public void StartMenu()
@@ -68,15 +131,40 @@ namespace Roguelike
 
         public void InspectMap()
         {
-            MapInspector inspector = new MapInspector("Inspector", new Point(CurrentHero.Coords.X, CurrentHero.Coords.Y));
-            char symbol = CurrentHero.Symbol;
-            while (true)
+            Inspector.IsInspect = true;
+            Inspector.Coords.SetValue(CurrentHero.Coords);
+<<<<<<< HEAD
+            //char symbol = CurrentHero.Symbol;
+            TileFlyweight tile;
+            while (Inspector.IsInspect)
             {
-                RedrawInspector(inspector, symbol);
-                if (!Input(inspector)) break;
-                inspector.Move();
-                MoveMap(inspector);
-                symbol = GetMapSymbol(new Point(inspector.Coords.X, inspector.Coords.Y));
+                tile = factory.GetTile((TileFlyweight.Type)Map.Map[Inspector.Coords.Y] [Inspector.Coords.X]);
+                //symbol = tile.Symbol;
+=======
+            char symbol = CurrentHero.Symbol;
+            Tile tile;
+            while (Inspector.IsInspect)
+            {
+                tile = Map.TileMap[Inspector.Coords.Y, Inspector.Coords.X];
+                symbol = tile.Symbol;
+
+>>>>>>> parent of c829fd9... Prepearing for rewriting Map width flyweight pattern
+                Console.SetCursorPosition(InfoBorder.Offset.X, InfoBorder.Offset.Y);
+                Console.WriteLine(new string(' ', 20));
+                Console.SetCursorPosition(InfoBorder.Offset.X, InfoBorder.Offset.Y);
+                Console.WriteLine($"{tile.Description}: {tile.Symbol}");
+
+                RedrawInspector(tile.Symbol);
+                Input(Inspector);
+                HandleConsoleResize();
+                if (!Inspector.IsInspect)
+                {
+                    SetMapOffset();
+                    Draw();
+                    break;
+                }
+                Inspector.Move();
+                MoveMap(Inspector);
             }
         }
 
@@ -130,28 +218,47 @@ namespace Roguelike
                     Map.Offset.X = offset - 1 >= 0 ? offset - 1 : offset;
                     break;
             }
-            //CurrentHero.RestoreCoords();
             Draw();
-            CurrentHero.IsMoved = false;
+        }
+
+        private void SetMapOffset()
+        {
+            Map.Offset.X = CurrentHero.Coords.X - MapBorder.Width / 2 >= 0 ?
+                                CurrentHero.Coords.X - MapBorder.Width / 2 : 0;
+            Map.Offset.Y = CurrentHero.Coords.Y - MapBorder.Height / 2 >= 0 ?
+                            CurrentHero.Coords.Y - MapBorder.Height / 2 : 0;
         }
 
         #region drawstuff
 
-        private void RedrawInspector(MapInspector inspector, char symbol)
+        private void RedrawInspector(char symbol)
         {
-            int left = inspector.Coords.X;
-            int top = inspector.Coords.Y;
-            Console.SetCursorPosition(1, 1);
-            Console.WriteLine(symbol);
-            while (!Console.KeyAvailable)
+            int left = Inspector.Coords.X;
+            int top = Inspector.Coords.Y;
+            HandleConsoleResize();
+            while (!Console.KeyAvailable && Inspector.IsInspect)
             {
+                HandleConsoleResize();
+                if (!Inspector.IsInspect) break;
+
                 Console.SetCursorPosition(left - Map.Offset.X + MapBorder.Offset.X, top - Map.Offset. Y + MapBorder.Offset.Y);
                 Console.Write(' ');
-                Thread.Sleep(200);
+                Thread.Sleep(100);
+
+                HandleConsoleResize();
+                if (!Inspector.IsInspect) break;
+
                 Console.SetCursorPosition(left - Map.Offset.X + MapBorder.Offset.X, top - Map.Offset.Y + MapBorder.Offset.Y);
+                Console.BackgroundColor = ConsoleColor.DarkRed;
                 Console.Write(symbol);
-                Thread.Sleep(200);
+                Console.ResetColor();
+                Thread.Sleep(100);
             }
+            Console.ResetColor();
+            HandleConsoleResize();
+            if (!Inspector.IsInspect) return;
+            Console.SetCursorPosition(left - Map.Offset.X + MapBorder.Offset.X, top - Map.Offset.Y + MapBorder.Offset.Y);
+            Console.Write(symbol);
         }
 
         private void DrawCharacter(Character character)
@@ -288,13 +395,11 @@ namespace Roguelike
         {
             if (ConsoleWidth != Console.WindowWidth || ConsoleHeight != Console.WindowHeight)
             {
+                Inspector.IsInspect = false;
                 Console.CursorVisible = false;
                 Console.Clear();
                 DrawAllBorders();
-                Map.Offset.X = CurrentHero.Coords.X - MapBorder.Width / 2 >= 0 ?
-                                CurrentHero.Coords.X - MapBorder.Width / 2 : 0;
-                Map.Offset.Y = CurrentHero.Coords.Y - MapBorder.Height / 2 >= 0 ?
-                                CurrentHero.Coords.Y - MapBorder.Height / 2 : 0;
+                SetMapOffset();
                 Draw();
             }
             ConsoleWidth = Console.WindowWidth;

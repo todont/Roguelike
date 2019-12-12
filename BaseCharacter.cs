@@ -1,6 +1,9 @@
 ﻿using System;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 namespace Roguelike
-{
+{   [DataContract]
     class BaseCharacter : BaseEntity
     {
         public enum MoveAction

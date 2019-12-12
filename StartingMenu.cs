@@ -11,6 +11,8 @@ namespace Roguelike
             {
                 new MenuItemNewGame(),
                 new MenuItemResume(),
+                new MenuItemSave(),
+                new MenuItemLoad(),
                 new MenuItemSettings(),
                 new MenuItemExit()
             };

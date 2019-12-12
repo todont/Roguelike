@@ -27,7 +27,39 @@ namespace Roguelike
             Program.GameEngine.PlayGame();
         }
     }
-
+    class MenuItemSave : MenuItem
+    {
+        public MenuItemSave()
+        {
+            Name = "Save";
+        }
+        public override void OnClick()
+        {
+            
+            if (Program.GameEngine.GameStarted == true)
+            {
+                Program.GameEngine.Save();
+                Program.GameEngine.PlayGame();
+            }
+                
+            //Program.GameEngine.PlayGame();
+        }
+    }
+    class MenuItemLoad : MenuItem
+    {
+        public MenuItemLoad()
+        {
+            Name = "Load";
+        }
+        public override void OnClick()
+        {
+            if (System.IO.File.Exists("C://Save1.txt"))
+            {
+                Program.GameEngine.InitFromSave();
+                Program.GameEngine.PlayGame();
+            }
+        }
+    }
     class MenuItemResume : MenuItem
     {
         public MenuItemResume()

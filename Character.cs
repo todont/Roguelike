@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace Roguelike
 {
+    [DataContract]
     abstract class Character : BaseCharacter
     {
         public enum Speed
@@ -13,9 +17,13 @@ namespace Roguelike
             Normal,
             High
         }
+        [DataMember]
         public Speed CurrentSpeed { get; set; }
+        [DataMember]
         public int HitPoints { get; set; }
+        [DataMember]
         public int RangeOfVision { get; set; }
+        [DataMember]
         public bool IsMoved { get; set; }
         protected abstract bool HandleCollisions(char mapSymbol, char entitySymbol);
         //sets CurrentGameAction, returns true if we can move, otherwise - false
