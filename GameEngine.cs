@@ -38,6 +38,8 @@ namespace Roguelike
         private int ConsoleWidth = 0;
         [DataMember]
         private Monster TmpMonster; //make this as list
+        [DataMember]
+        public Random GameRandom = new Random();
         public GameEngine(){}
         public GameEngine(SerializationInfo info, StreamingContext context)
         {
