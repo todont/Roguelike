@@ -30,8 +30,6 @@ namespace Roguelike
         public Rectangle MapBorder { get; set; }
         [DataMember]
         public Rectangle InfoBorder { get; set; }
-        [JsonIgnore]
-        public Random GameRandom = new Random();
         [DataMember]
         private int ConsoleHeight = 0;
         [DataMember]
@@ -135,7 +133,7 @@ namespace Roguelike
         {
             Inspector.IsInspect = true;
             Inspector.Coords.SetValue(CurrentHero.Coords);
-
+            TileFactory factory = new TileFactory();
             //char symbol = CurrentHero.Symbol;
             TileFlyweight tile;
             while (Inspector.IsInspect)
