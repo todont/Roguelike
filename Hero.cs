@@ -35,13 +35,11 @@ namespace Roguelike
                     //OpenInventory(Hero.Inventory)
                     //Hero.Inventory is a list, containing many lists of
                     //weapon, armor, potion and so on..
-                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
-                    Console.WriteLine("You open an inventory");
+                    Program.GameEngine.InfoBorder.WriteNextLine("You open an inventory");
                     break;
                 case GameAction.PickUpItem:
                     //Hero.AddItem(Item)
-                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
-                    Console.WriteLine("You pick up an item");
+                    Program.GameEngine.InfoBorder.WriteNextLine("You pick up an item");
                     break;
                 case GameAction.Exit:
                     Program.GameEngine.StartMenu();
@@ -51,12 +49,11 @@ namespace Roguelike
                     break;
                 case GameAction.DropItem:
                     //drop item
-                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
-                    Console.WriteLine("You drop an item");
+                    Program.GameEngine.InfoBorder.WriteNextLine("You drop an item");
                     break;
                 case GameAction.InspectMap:
-                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
-                    Console.WriteLine("You explore the map");
+                    Program.GameEngine.InfoBorder.Clear();
+                    Program.GameEngine.InfoBorder.WriteNextLine("You are inspecting the map");
                     Program.GameEngine.InspectMap();
                     break;
                 default:
@@ -70,8 +67,7 @@ namespace Roguelike
             {
                 case '▒':
                     //make this as log function that depends on symbol we switching
-                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
-                    Console.WriteLine("You hit a wall!");
+                    Program.GameEngine.InfoBorder.WriteNextLine("You hit a wall!");
                     return false;
                 case 'S': //snake
                     //CurrentGameAction = attack
@@ -80,8 +76,7 @@ namespace Roguelike
                     //CurrentGameAction = pick up item
                     return true;
                 default:
-                    Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
-                    Console.WriteLine(new string(' ', 20));
+                    //Program.GameEngine.InfoBorder.Clear();
                     return true;
             }
         }    }}

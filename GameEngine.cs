@@ -15,7 +15,7 @@ namespace Roguelike
         private Cave Map;
         public Rectangle HeroInfoBorder { get; set; }
         public Rectangle MapBorder { get; set; }
-        public Rectangle InfoBorder { get; set; }
+        public InfoBorder InfoBorder { get; set; }
         public Random GameRandom = new Random();
         private int ConsoleHeight = 0;
         private int ConsoleWidth = 0;
@@ -56,8 +56,10 @@ namespace Roguelike
             {
                 //"if" is not correct, we mustn't go there if we hit a wall, for example
                 CurrentHero.DoGameAction();
+                // if (!CurrentHero.IsAttacked)
                 return;
             }
+
             TmpMonster.MoveTo(CurrentHero);
             MoveMap(CurrentHero);
         }
@@ -80,10 +82,7 @@ namespace Roguelike
                 tile = factory.GetTile((TileFlyweight.Type)Map.Map[Inspector.Coords.Y, Inspector.Coords.X]);
                 symbol = tile.Symbol;
 
-                Console.SetCursorPosition(InfoBorder.Offset.X, InfoBorder.Offset.Y);
-                Console.WriteLine(new string(' ', 20));
-                Console.SetCursorPosition(InfoBorder.Offset.X, InfoBorder.Offset.Y);
-                Console.WriteLine($"{tile.Description}: {tile.Symbol}");
+                InfoBorder.ClearLineAndWrite($"{tile.Description}: {tile.Symbol}", 1);
 
                 RedrawInspector(symbol);
                 Input(Inspector);
@@ -92,6 +91,7 @@ namespace Roguelike
                 {
                     SetMapOffset();
                     Draw();
+                    Program.GameEngine.InfoBorder.Clear();
                     break;
                 }
                 Inspector.Move();
@@ -167,6 +167,9 @@ namespace Roguelike
             int left = Inspector.Coords.X;
             int top = Inspector.Coords.Y;
             HandleConsoleResize();
+
+            Console.BackgroundColor = ConsoleColor.DarkYellow;
+
             while (!Console.KeyAvailable && Inspector.IsInspect)
             {
                 HandleConsoleResize();
@@ -180,9 +183,9 @@ namespace Roguelike
                 if (!Inspector.IsInspect) break;
 
                 Console.SetCursorPosition(left - Map.Offset.X + MapBorder.Offset.X, top - Map.Offset.Y + MapBorder.Offset.Y);
-                Console.BackgroundColor = ConsoleColor.DarkRed;
+                //Console.BackgroundColor = ConsoleColor.DarkRed;
                 Console.Write(symbol);
-                Console.ResetColor();
+                //Console.ResetColor();
                 Thread.Sleep(100);
             }
             Console.ResetColor();
@@ -251,7 +254,7 @@ namespace Roguelike
             MapBorder.Offset = new Point(MapBorder.Location.X + 1, MapBorder.Location.Y + 1);
             DrawBorder(MapBorder);
 
-            InfoBorder = new Rectangle
+            InfoBorder = new InfoBorder
             {
                 Height = Console.WindowHeight - MapBorder.Height,
                 Width = Console.WindowWidth,

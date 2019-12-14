@@ -119,7 +119,6 @@ namespace Roguelike
                 return;
             }
             CurrentMoveAction = BaseCharacter.MoveAction.Left;
-            Console.WriteLine(CurrentMoveAction);
         }
 
         public void MoveTo(BaseCharacter enemy)
