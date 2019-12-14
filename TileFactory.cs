@@ -13,14 +13,20 @@ namespace Roguelike
                 tiles.Add(TileFlyweight.Type.Ground, new TileFlyweight("Ground", "Ground", '.', TileFlyweight.Type.Ground));
             if (!tiles.ContainsKey(TileFlyweight.Type.Wall))
                 tiles.Add(TileFlyweight.Type.Wall, new TileFlyweight("Wall", "Common wall", '▒', TileFlyweight.Type.Wall));
-            if (!tiles.ContainsKey(TileFlyweight.Type.Treasure))
-                tiles.Add(TileFlyweight.Type.Treasure, new TileFlyweight("Treasure", "Unusual treasure", 'T', TileFlyweight.Type.Treasure));
+            if (!tiles.ContainsKey(TileFlyweight.Type.Water))
+                tiles.Add(TileFlyweight.Type.Water, new TileFlyweight("Treasure", "Unusual treasure", 'T', TileFlyweight.Type.Water));
+            if (!tiles.ContainsKey(TileFlyweight.Type.Lava))
+                tiles.Add(TileFlyweight.Type.Lava, new TileFlyweight("Treasure", "Unusual treasure", 'T', TileFlyweight.Type.Lava));
         }
 
-        public TileFlyweight GetTile(TileFlyweight.Type key)
+        public TileFlyweight GetTile(Tile tile)
         {
+            TileFlyweight.Type key = tile.Type;
             if (tiles.ContainsKey(key))
+            {
+                tiles[key].Object = tile.Object;
                 return tiles[key];
+            }
             return null;
         }
     }

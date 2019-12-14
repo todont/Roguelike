@@ -71,15 +71,13 @@ namespace Roguelike
 
         public void InspectMap()
         {
-            TileFactory factory = new TileFactory();
-
             Inspector.IsInspect = true;
             Inspector.Coords.SetValue(CurrentHero.Coords);
             char symbol = CurrentHero.Symbol;
             TileFlyweight tile;
             while (Inspector.IsInspect)
             {
-                tile = factory.GetTile((TileFlyweight.Type)Map.Map[Inspector.Coords.Y, Inspector.Coords.X]);
+                tile = GetTile(new Point(Inspector.Coords.Y, Inspector.Coords.X));
                 symbol = tile.Symbol;
 
                 InfoBorder.ClearLineAndWrite($"{tile.Description}: {tile.Symbol}", 1);
@@ -132,7 +130,7 @@ namespace Roguelike
             {
                 case MapMoveDirection.Top:
                     offset = Map.Offset.Y;
-                    length = Map.WorldAscii.Length;
+                    length = Map.Map.GetLength(0);
                     Map.Offset.Y = offset + 1 < length ? offset + 1 : offset;
                     break;
                 case MapMoveDirection.Bot:
@@ -141,7 +139,7 @@ namespace Roguelike
                     break;
                 case MapMoveDirection.Left:
                     offset = Map.Offset.X;
-                    length = Map.WorldAscii[0].Length;
+                    length = Map.Map.GetLength(1);
                     Map.Offset.X = offset + 1 < length ? offset + 1 : offset;
                     break;
                 case MapMoveDirection.Right:
@@ -238,6 +236,13 @@ namespace Roguelike
                  Map.WorldAscii[i].Substring(Map.Offset.X);
                 Console.WriteLine(mapstr);
             }
+            /*
+            for (int i = Map.Offset.Y, y = 0; i < Map.Offset.Y + MapBorder.Height - 2 && i < Map.WorldTile.GetLength(0); i++, y++)
+                for (int j = Map.Offset.X, x = 0; j < Map.Offset.X + MapBorder.Width - 2 && j < Map.WorldTile.GetLength(1); j++, x++)
+                {
+                    Console.SetCursorPosition(MapBorder.Offset.X + x, MapBorder.Offset.Y + y);
+                    Console.Write(GetTile(new Point(i, j)).Symbol);
+                }*/
             DrawCharacter(CurrentHero);
             //loop over list of monsters
             DrawCharacter(TmpMonster);
@@ -318,6 +323,24 @@ namespace Roguelike
             char symbol = Map.WorldAscii[point.Y][point.X];
             return symbol;
         }
+
+        public TileFlyweight GetTile(Point coords)
+        {
+            Tile tile = Map.WorldTile[coords.Y, coords.X];
+            TileFactory factory = new TileFactory();
+            return factory.GetTile(tile);
+        }
+
+        public void SetObject(Point coords, BaseEntity obj)
+        {
+            Map.WorldTile[coords.Y, coords.X].Object = obj;
+        }
+
+        public void RemoveObject(Point coords)
+        {
+            Map.WorldTile[coords.Y, coords.X].Object = null;
+        }
+
         public char GetEntitySymbol(Point point)
         {
             //list over all entities
