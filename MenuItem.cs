@@ -53,7 +53,8 @@ namespace Roguelike
         }
         public override void OnClick()
         {
-            if (System.IO.File.Exists(@"..\Saves\Save1.txt"))
+            string path = Program.GameEngine.MakeCorrectPath();
+            if (System.IO.File.Exists(path+"1.txt"))
             {
                 Program.GameEngine.InitFromSave();
                 Program.GameEngine.PlayGame();
