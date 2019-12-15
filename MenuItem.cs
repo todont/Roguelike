@@ -35,14 +35,17 @@ namespace Roguelike
         }
         public override void OnClick()
         {
-            
+            Int16 number;
+            Console.Write("Select savefile:");
+            while (!Int16.TryParse(Console.ReadLine(), out number) || number < 0 || number > 6)
+            {
+                Console.WriteLine("Wrong input or savefile number > 6");
+            }
             if (Program.GameEngine.GameStarted == true)
             {
-                Program.GameEngine.Save();
+                Program.GameEngine.Save(number);
                 Program.GameEngine.PlayGame();
             }
-                
-            //Program.GameEngine.PlayGame();
         }
     }
     class MenuItemLoad : MenuItem
@@ -54,9 +57,15 @@ namespace Roguelike
         public override void OnClick()
         {
             string path = Program.GameEngine.MakeCorrectPath();
-            if (System.IO.File.Exists(path+"1.txt"))
+            Int16 number;
+            Console.Write("Select loadfile:");
+            while (!Int16.TryParse(Console.ReadLine(), out number) || number < 0 || number > 6)
             {
-                Program.GameEngine.InitFromSave();
+                Console.WriteLine("Wrong input");
+            }
+            if (System.IO.File.Exists(path+$"{number}.txt"))
+            {
+                Program.GameEngine.InitFromSave(number);
                 Program.GameEngine.PlayGame();
             }
         }
