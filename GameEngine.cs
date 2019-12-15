@@ -63,7 +63,7 @@ namespace Roguelike
         }
         public void InitFromSave()
         {
-            FileStream buffer = File.OpenRead("C:\\save1.txt");
+            FileStream buffer = File.OpenRead(@"..\Saves\Save1.txt");
             DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(GameEngine));
             GameEngine tmpengine = jsonSerializer.ReadObject(buffer) as GameEngine;
             CurrentHero = tmpengine.CurrentHero;
@@ -78,7 +78,12 @@ namespace Roguelike
         public void Save()
         {
             DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(GameEngine));
-            FileStream buffer = File.Create("C:\\Save1.txt");
+            DirectoryInfo dirInfo = new DirectoryInfo(@"..\Saves");
+            if (!dirInfo.Exists)
+            {
+                dirInfo.Create();
+            }
+            FileStream buffer = File.Create(@"..\Saves\Save1.txt");
             jsonSerializer.WriteObject(buffer,this);
             buffer.Close();
         }
