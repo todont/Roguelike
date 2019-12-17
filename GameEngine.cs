@@ -27,8 +27,8 @@ namespace Roguelike
             Map.ConnectCaves();
             Map.WriteMapIntoFile();
             Map.Offset = new Point(0, 0);
-            CurrentHero = new Hero(new Point(12, 10), 15, 0, 8, Character.Speed.Normal, "Chiks-Chiriks");
-            TmpMonster = new Monster(new Point(15, 15), 10, 10, Character.Speed.Normal, "Snake", 'S');
+            CurrentHero = new Hero(new Point(12, 10), 15, 0, 8, 10, "Chiks-Chiriks");
+            TmpMonster = new Monster(new Point(15, 15), 10, 10, 10, "Snake", 'S');
             Inspector = new MapInspector("Inspector", new Point(CurrentHero.Coords.X, CurrentHero.Coords.Y));
             GameStarted = true;
             ConsoleHeight = Console.WindowHeight;
@@ -52,15 +52,15 @@ namespace Roguelike
         private void Logic()
         {
             CurrentHero.Move();
-            if (!CurrentHero.IsMoved)
+            if (!CurrentHero.IsActionDone)
             {
                 //"if" is not correct, we mustn't go there if we hit a wall, for example
                 CurrentHero.DoGameAction();
-                // if (!CurrentHero.IsAttacked)
-                return;
+                if(!CurrentHero.IsActionDone) return;
             }
 
             TmpMonster.MoveTo(CurrentHero);
+            TmpMonster.DoGameAction();
             MoveMap(CurrentHero);
         }
         public void StartMenu()
@@ -78,7 +78,9 @@ namespace Roguelike
             while (Inspector.IsInspect)
             {
                 tile = GetTile(Inspector.Coords.X, Inspector.Coords.Y);
-                symbol = tile.Symbol;
+                if (tile.Object != null) //TODO: draw this with right color
+                    symbol = tile.Object.Symbol;
+                else symbol = tile.Symbol;
 
                 InfoBorder.ClearLineAndWrite($"{tile.Description}: {tile.Symbol}", 1);
 
@@ -88,6 +90,7 @@ namespace Roguelike
                 if (!Inspector.IsInspect)
                 {
                     SetMapOffset();
+                    DrawAfterMapMoving();
                     Draw();
                     Program.GameEngine.InfoBorder.Clear();
                     break;
@@ -209,7 +212,6 @@ namespace Roguelike
         private void RedrawCharacter(Character character)
         {
             //must not redraw when character coords is out of current console size 
-            DrawCharacter(character);
             int left = character.PrevCoords.X - Map.Offset.X + MapBorder.Offset.X;
             int top = character.PrevCoords.Y - Map.Offset.Y + MapBorder.Offset.Y;
             if (left >= MapBorder.Offset.X && left <= MapBorder.Offset.X + MapBorder.Width - 3 &&
@@ -219,6 +221,7 @@ namespace Roguelike
                 Console.SetCursorPosition(left, top);
                 Console.Write(GetTile(character.PrevCoords.X, character.PrevCoords.Y).Symbol);
             }
+            DrawCharacter(character);
         }
         private void Redraw()
         {
@@ -438,7 +441,7 @@ namespace Roguelike
                 Input();
                 HandleConsoleResize();
                 Logic();
-                if (CurrentHero.IsMoved)
+                if (CurrentHero.IsActionDone)
                     Redraw();
                 //need to Redraw() not only when CurrentHero doesn't move
                 //For example, if we just killed a monster

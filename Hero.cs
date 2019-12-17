@@ -7,17 +7,19 @@ namespace Roguelike
 {
     class Hero : Character
     {
-        public Hero(Point coords, int hitPoints, int expPoints, int rangeOfVision, Character.Speed speed, string name)
+        public Hero(Point coords, int hitPoints, int expPoints, int rangeOfVision, int speedPoints, string name)
         {
             Coords = coords;
             PrevCoords = new Point(coords.X, coords.Y);
             HitPoints = hitPoints; //should depend on class/hit dices
             ExpPoints = expPoints;
             RangeOfVision = rangeOfVision;
-            CurrentSpeed = speed;
+            SpeedPoints = speedPoints;
+            MovePoints = 0;
             Name = name;
             Symbol = '@';
-            IsMoved = false;
+            IsActionDone = false;
+            Program.GameEngine.SetObject(coords.X, coords.Y, this);
         }
         public enum GameAction
         {
@@ -36,47 +38,54 @@ namespace Roguelike
                     //Hero.Inventory is a list, containing many lists of
                     //weapon, armor, potion and so on..
                     Program.GameEngine.InfoBorder.WriteNextLine("You open an inventory");
+                    IsActionDone = false;
                     break;
                 case GameAction.PickUpItem:
                     //Hero.AddItem(Item)
                     Program.GameEngine.InfoBorder.WriteNextLine("You pick up an item");
+                    IsActionDone = true;
                     break;
                 case GameAction.Exit:
                     Program.GameEngine.StartMenu();
+                    IsActionDone = false;
                     break;
                 case GameAction.Attack:
-                    //attack
+                    //make this as attack function
+                    IsActionDone = true;
                     break;
                 case GameAction.DropItem:
                     //drop item
                     Program.GameEngine.InfoBorder.WriteNextLine("You drop an item");
+                    IsActionDone = false;
                     break;
                 case GameAction.InspectMap:
                     Program.GameEngine.InfoBorder.Clear();
                     Program.GameEngine.InfoBorder.WriteNextLine("You are inspecting the map");
                     Program.GameEngine.InspectMap();
+                    IsActionDone = false;
                     break;
                 default:
-                    //Console.SetCursorPosition(Program.GameEngine.InfoBorder.Offset.X, Program.GameEngine.InfoBorder.Offset.Y);
-                    //Console.WriteLine("You do nothing");
+                    IsActionDone = false;
                     break;
             }
-        }        protected override bool HandleCollisions(char mapSymbol, char entitySymbol)
+        }        protected override void ResetGameAction()
         {
-            switch (mapSymbol)
+            CurrentGameAction = (GameAction)(1000);
+        }        protected override bool HandleCollisions(TileFlyweight tile)
+        {
+            ResetGameAction();
+            IsActionDone = true;
+
+            if (tile.Object == null) return true;
+            Target = tile.Object;
+            
+            if(Target is Monster)
             {
-                case '▒':
-                    //make this as log function that depends on symbol we switching
-                    Program.GameEngine.InfoBorder.WriteNextLine("You hit a wall!");
-                    return false;
-                case 'S': //snake
-                    //CurrentGameAction = attack
-                    return false;
-                case '$': //money
-                    //CurrentGameAction = pick up item
-                    return true;
-                default:
-                    //Program.GameEngine.InfoBorder.Clear();
-                    return true;
+                CurrentGameAction = GameAction.Attack;
+                Program.GameEngine.InfoBorder.WriteNextLine($"{Name} ran into {Target.Name}");
+                return false;
             }
+
+            return true;
+            //if (Target is Treasure)...
         }    }}
