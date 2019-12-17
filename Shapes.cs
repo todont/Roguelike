@@ -17,14 +17,23 @@ namespace Roguelike
         }
         public Point() { }
 
-        public bool IsPointEqual(Point x, Point y)
+        public bool IsPointEqual(Point x)
         {
-            return ((x.X == y.X) && (x.Y == y.Y));
+            return ((x.X == this.X) && (x.Y == this.Y));
         }
         public void SetValue(int x, int y)
         {
             this.X = x;
             this.Y = y;
+        }
+        public void SetValue(Point point)
+        {
+            this.X = point.X;
+            this.Y = point.Y;
+        }
+        public double GetDistance(Point x)
+        {
+            return Math.Sqrt(Math.Pow(x.X - this.X, 2) + Math.Pow(x.Y - this.Y, 2));
         }
     }
 
