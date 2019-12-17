@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 namespace Roguelike
 {   [DataContract]
+    [KnownType(typeof(GameAction))]
     class Hero : Character
     {
         public Hero(Point coords, int hitPoints, int expPoints, int rangeOfVision, int speedPoints, string name)
@@ -32,7 +33,7 @@ namespace Roguelike
             InspectMap = ConsoleKey.M,
             Attack,
             DropItem
-        }        [DataMember]        public int ExpPoints { get; set; }        public GameAction CurrentGameAction { get; set; }        public void DoGameAction()
+        }        [DataMember]        public int ExpPoints { get; set; }        [DataMember]        public GameAction CurrentGameAction { get; set; }        public void DoGameAction()
         {
             switch (CurrentGameAction)
             {

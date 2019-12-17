@@ -13,12 +13,13 @@ namespace Roguelike
     [KnownType(typeof(Cave))]
     [KnownType(typeof(Monster))]
     [KnownType(typeof(Rectangle))]
+    [KnownType(typeof(InfoBorder))]
     class GameEngine
     {   [DataMember]
         private Hero CurrentHero;
-        [NonSerialized]
+        [JsonIgnore]
         private MapInspector Inspector;
-        [NonSerialized]
+        [JsonIgnore]
         private bool GameOver = false;
         [JsonIgnore]
         public bool GameStarted { get; private set; }
@@ -28,16 +29,15 @@ namespace Roguelike
         public Rectangle HeroInfoBorder { get; set; }
         [DataMember]
         public Rectangle MapBorder { get; set; }
+        [DataMember]
         public InfoBorder InfoBorder { get; set; }
         public Random GameRandom = new Random();
-
+        [DataMember]
         private int ConsoleHeight = 0;
         [DataMember]
         private int ConsoleWidth = 0;
         [DataMember]
         private Monster TmpMonster; //make this as list
-        [DataMember]
-        public Random GameRandom = new Random();
         public GameEngine() { }
         public void InitFromSave(Int16 numberofsave)
         {
@@ -138,6 +138,7 @@ namespace Roguelike
             while (Inspector.IsInspect)
             {
                 tile = GetTile(Inspector.Coords.X, Inspector.Coords.Y);
+                char symbol;
                 if (tile.Object != null) //TODO: draw this with right color
                     symbol = tile.Object.Symbol;
                 else symbol = tile.Symbol;
@@ -156,7 +157,7 @@ namespace Roguelike
                     break;
                 }
                 Inspector.Move();
-                if (!Map.WorldTile[Inspector.Coords.Y, Inspector.Coords.X].Visible) Inspector.RestoreCoords();
+                if (!Map.WorldTile[Inspector.Coords.Y] [Inspector.Coords.X].Visible) Inspector.RestoreCoords();
                 MoveMap(Inspector);
             }
         }
@@ -263,7 +264,7 @@ namespace Roguelike
             int top = character.Coords.Y - Map.Offset.Y + MapBorder.Offset.Y;
             if (left >= MapBorder.Offset.X && left <= MapBorder.Offset.X + MapBorder.Width - 3 &&
                 top >= MapBorder.Offset.Y && top <= MapBorder.Offset.Y + MapBorder.Height - 3 &&
-                Map.WorldTile[character.Coords.Y, character.Coords.X].Visible)
+                Map.WorldTile[character.Coords.Y] [character.Coords.X].Visible)
             {
                 Console.SetCursorPosition(left, top);
                 Console.Write(character.Symbol);
@@ -276,7 +277,7 @@ namespace Roguelike
             int top = character.PrevCoords.Y - Map.Offset.Y + MapBorder.Offset.Y;
             if (left >= MapBorder.Offset.X && left <= MapBorder.Offset.X + MapBorder.Width - 3 &&
                 top >= MapBorder.Offset.Y && top <= MapBorder.Offset.Y + MapBorder.Height - 3 &&
-                Map.WorldTile[character.PrevCoords.Y, character.PrevCoords.X].Visible)
+                Map.WorldTile[character.PrevCoords.Y] [character.PrevCoords.X].Visible)
             {
                 Console.SetCursorPosition(left, top);
                 Console.Write(GetTile(character.PrevCoords.X, character.PrevCoords.Y).Symbol);
@@ -296,9 +297,9 @@ namespace Roguelike
             FOV();
             for (int i = Map.Offset.Y, y = 0; y < MapBorder.Height - 2 && i < Map.WorldTile.GetLength(0); i++, y++)
             {
-                for (int j = Map.Offset.X, x = 0; x < MapBorder.Width - 2 && j < Map.WorldTile.GetLength(1); j++, x++)
+                for (int j = Map.Offset.X, x = 0; x < MapBorder.Width - 2 && j < Map.WorldTile[0].GetLength(0); j++, x++)
                 {
-                    if (Map.WorldTile[i, j].Visible)
+                    if (Map.WorldTile[i] [j].Visible)
                     {
                         Console.SetCursorPosition(MapBorder.Offset.X + x, MapBorder.Offset.Y + y);
                         Console.Write(GetTile(j, i).Symbol);
@@ -317,9 +318,9 @@ namespace Roguelike
             {
                 Console.SetCursorPosition(MapBorder.Offset.X, y + 1);
                 Console.Write(new string(' ', MapBorder.Width - 2));
-                for (int j = Map.Offset.X, x = 0; x < MapBorder.Width - 2 && j < Map.WorldTile.GetLength(1); j++, x++)
+                for (int j = Map.Offset.X, x = 0; x < MapBorder.Width - 2 && j < Map.WorldTile[0].GetLength(0); j++, x++)
                 {
-                    if (Map.WorldTile[i, j].Visible)
+                    if (Map.WorldTile[i] [j].Visible)
                     {
                         Console.SetCursorPosition(MapBorder.Offset.X + x, MapBorder.Offset.Y + y);
                         Console.Write(GetTile(j, i).Symbol);
@@ -411,8 +412,8 @@ namespace Roguelike
             oy = CurrentHero.Coords.Y + 0.5;
             for (int i = 0; i < CurrentHero.RangeOfVision; i++)
             {
-                Map.WorldTile[(int)oy, (int)ox].Visible = true;
-                if (Map.WorldTile[(int)oy, (int)ox].Type == TileFlyweight.Type.Wall)
+                Map.WorldTile[(int)oy] [(int)ox].Visible = true;
+                if (Map.WorldTile[(int)oy][(int)ox].Type == TileFlyweight.Type.Wall)
                     return;
                 ox += x;
                 oy += y;
@@ -443,7 +444,7 @@ namespace Roguelike
         /// <param name="y">The y coordinate.</param>
         public TileFlyweight GetTile(int x, int y)
         {
-            Tile tile = Map.WorldTile[y, x];
+            Tile tile = Map.WorldTile[y][x];
             TileFactory factory = new TileFactory();
             return factory.GetTile(tile);
         }
@@ -456,7 +457,7 @@ namespace Roguelike
         /// <param name="obj">Object.</param>
         public void SetObject(int x, int y, BaseEntity obj)
         {
-            Map.WorldTile[y, x].Object = obj;
+            Map.WorldTile[y] [x].Object = obj;
         }
 
         /// <summary>
@@ -466,7 +467,7 @@ namespace Roguelike
         /// <param name="y">The y coordinate.</param>
         public void RemoveObject(int x, int y)
         {
-            Map.WorldTile[y, x].Object = null;
+            Map.WorldTile[y] [x].Object = null;
         }
 
         public char GetEntitySymbol(Point point)

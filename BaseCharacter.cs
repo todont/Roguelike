@@ -13,7 +13,7 @@ namespace Roguelike
             Right = ConsoleKey.RightArrow,
             Left = ConsoleKey.LeftArrow
         }
-
+        [DataMember]
         public MoveAction CurrentMoveAction { get; set; }
 
         public void MoveUp()

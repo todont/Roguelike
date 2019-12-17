@@ -10,14 +10,20 @@ using System.Runtime.Serialization.Json;
 namespace Roguelike
 {
     [DataContract]
+    [KnownType(typeof(BaseEntity))]
     abstract class Character : BaseCharacter
     {
-
+        [DataMember]
         public int HitPoints { get; set; }
+        [DataMember]
         public int MovePoints { get; set; }
+        [DataMember]
         public int SpeedPoints { get; set; }
+        [DataMember]
         public int RangeOfVision { get; set; }
+        [DataMember]
         public bool IsActionDone { get; set; }
+        [DataMember]
         public BaseEntity Target { get; set; }
         protected abstract void ResetGameAction();
         protected abstract bool HandleCollisions(TileFlyweight tile);

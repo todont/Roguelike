@@ -1,9 +1,13 @@
 ﻿using System;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 namespace Roguelike
-{
+{   [DataContract]
     class InfoBorder : Rectangle
-    {
+    {   [DataMember]
         private string[] Info;
+        [DataMember]
         private int Index = 0;
 
         public InfoBorder() { }
