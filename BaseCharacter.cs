@@ -65,6 +65,12 @@ namespace Roguelike
             }
         }
 
+        public void MoveEntity()
+        {
+            SetPrevPlusMove(CurrentMoveAction);
+            Program.GameEngine.RemoveObject(PrevCoords.X, PrevCoords.Y);
+            Program.GameEngine.SetObject(Coords.X, Coords.Y, this);
+        }
         public virtual void Move() //sets IsMoved
         {
             SetPrevPlusMove(CurrentMoveAction);
