@@ -4,15 +4,16 @@ using System.Drawing;
 using System.Linq;
 using System.ComponentModel;
 using System.IO;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Text;
 
 namespace CaveGenerator
-{
+{   [DataContract]
     class Cave
     {
-
         private Random rnd;
-
         public string[] WorldAscii { get; private set; }
         public Roguelike.Tile[,] WorldTile { get; private set; }
         public Roguelike.Point Offset { get; set; }
@@ -21,6 +22,7 @@ namespace CaveGenerator
         public int Neighbours { get; set; }
         public int CloseCellProb { get; set; } //55 tends to produce 1 cave, 40 few and small caves
         public int Iterations { get; set; }
+        [DataMember]
         public Size MapSize { get; set; }
 
         public int LowerLimit { get; set; }
@@ -45,17 +47,21 @@ namespace CaveGenerator
         /// <summary>
         /// Caves within the map are stored here
         /// </summary>
+        ///
+        [JsonIgnore]
         private List<List<Point>> Caves;
 
         /// <summary>
         /// Corridors within the map stored here
         /// </summary>
+        [JsonIgnore]
         private List<Point> Corridors;
 
         /// <summary>
         /// Contains the map
         /// </summary>
-        public int[,] Map;
+        [DataMember]
+        public int[][] Map;
 
         #endregion
 
@@ -123,9 +129,10 @@ namespace CaveGenerator
                 for (int y = 0; y < MapSize.Height; y++)
                 {
                     if (x == 0 || x == MapSize.Width - 1 || y == 0 || y == MapSize.Height - 1)
-                        Map[x, y] = 0;
+                        Map[x][y] = 0 ;
                     WorldTile[x, y] = new Roguelike.Tile((Roguelike.TileFlyweight.Type)Map[x, y]);
                 }
+
             WorldAscii = new string[worldHeight];
             StringBuilder[] builder = new StringBuilder[worldHeight];
             for (var x = 0; x < worldHeight; x++)
@@ -134,7 +141,7 @@ namespace CaveGenerator
                 for (var y = 0; y < worldWidth; y++)
                 {
                     //true == wall, false == ".", 2 == treasure; 0 == wall, 1 == ".".
-                    if (Map[x, y] == 0)
+                    if (Map[x][y] == 0)
                         builder[x].Append("▒");
                     //Console.Write("#");
                     //The colour of treasure!
@@ -170,7 +177,11 @@ namespace CaveGenerator
         private void BuildCaves()
         {
 
-            Map = new int[MapSize.Width, MapSize.Height];
+            Map = new int[MapSize.Width] [];
+            for (int i = 0; i < MapSize.Width; i++)
+            {
+                Map[i] = new int[MapSize.Height];
+            }
 
 
             //go through each map cell and randomly determine whether to close it
@@ -178,7 +189,7 @@ namespace CaveGenerator
             for (int x = 0; x < MapSize.Width; x++)
                 for (int y = 0; y < MapSize.Height; y++)
                     if (rnd.Next(0, 100) < CloseCellProb)
-                        Map[x, y] = 1;
+                        Map[x] [y] = 1;
 
             Point cell;
 
@@ -466,7 +477,6 @@ namespace CaveGenerator
 
 
             } while (validdirections.Count == 0);
-
             pDirection = validdirections[rnd.Next(0, validdirections.Count)];
             pLocation.Offset(pDirection);
 
@@ -648,7 +658,7 @@ namespace CaveGenerator
         /// <param name="val"></param>
         private void Point_Set(Point p, int val)
         {
-            Map[p.X, p.Y] = val;
+            Map[p.X] [p.Y] = val;
         }
 
         /// <summary>
@@ -658,7 +668,7 @@ namespace CaveGenerator
         /// <returns></returns>
         private int Point_Get(Point p)
         {
-            return Map[p.X, p.Y];
+            return Map[p.X] [p.Y];
         }
 
         #endregion

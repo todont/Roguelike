@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace Roguelike
 {
+    [DataContract]
     abstract class Character : BaseCharacter
     {
+
         public int HitPoints { get; set; }
         public int MovePoints { get; set; }
         public int SpeedPoints { get; set; }

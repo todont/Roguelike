@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace Roguelike
-{
+{   [DataContract]
     class Point
-    {
+    {   [DataMember]
         public int X { get; set; }
+        [DataMember]
         public int Y { get; set; }
         public Point(int x, int y)
         {
@@ -36,12 +40,15 @@ namespace Roguelike
             return Math.Sqrt(Math.Pow(x.X - this.X, 2) + Math.Pow(x.Y - this.Y, 2));
         }
     }
-
+    [DataContract]
     class Rectangle
-    {
+    {   [DataMember]
         public Point Offset { get; set; }
+        [DataMember]
         public int Width { get; set; }
+        [DataMember]
         public int Height { get; set; }
+        [DataMember]
         public Point Location { get; set; }
         public Rectangle(int width, int height, Point location)
         {

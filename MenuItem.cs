@@ -27,7 +27,49 @@ namespace Roguelike
             Program.GameEngine.PlayGame();
         }
     }
-
+    class MenuItemSave : MenuItem
+    {
+        public MenuItemSave()
+        {
+            Name = "Save";
+        }
+        public override void OnClick()
+        {
+            Int16 number;
+            Console.Write("Select savefile:");
+            while (!Int16.TryParse(Console.ReadLine(), out number) || number < 1 || number > 5)
+            {
+                Console.WriteLine("Wrong input or savefile number > 6");
+            }
+            if (Program.GameEngine.GameStarted == true)
+            {
+                Program.GameEngine.Save(number);
+                Program.GameEngine.PlayGame();
+            }
+        }
+    }
+    class MenuItemLoad : MenuItem
+    {
+        public MenuItemLoad()
+        {
+            Name = "Load";
+        }
+        public override void OnClick()
+        {
+            string path = Program.GameEngine.MakeCorrectPath();
+            Int16 number;
+            Console.Write("Select loadfile:");
+            while (!Int16.TryParse(Console.ReadLine(), out number) || number < 1 || number > 5)
+            {
+                Console.WriteLine("Wrong input");
+            }
+            if (System.IO.File.Exists(path+$"{number}.txt"))
+            {
+                Program.GameEngine.InitFromSave(number);
+                Program.GameEngine.PlayGame();
+            }
+        }
+    }
     class MenuItemResume : MenuItem
     {
         public MenuItemResume()

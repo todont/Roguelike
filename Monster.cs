@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace Roguelike
-{
+{   [DataContract]
     class Monster : Character
     {
         public Monster(Point coords, int hitPoints, int rangeOfVision, int speedPoints, string name, char symbol)
@@ -29,16 +32,24 @@ namespace Roguelike
         }
         //Tile MonsterTile (color and shape of 
         // symbol that represents monster)
+
+        [DataMember]
         private double ChanceToGoUp;
+        [DataMember]
         private double ChanceToGoDown;
+        [DataMember]
         private double ChanceToGoRight;
+        [DataMember]
         private double ChanceToGoLeft;
+        [DataMember]
         private double StandardDecreasingChance;
+        [DataMember]
         private double PrevDistance;
         public enum GameAction 
         {
             Attack
         }
+        [DataMember]
         public GameAction CurrentGameAction { get; set; }
 
         #region AI

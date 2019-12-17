@@ -1,25 +1,85 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using CaveGenerator;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace Roguelike
-{
+{   [DataContract]
+    [KnownType(typeof(Hero))]
+    [KnownType(typeof(Cave))]
+    [KnownType(typeof(Monster))]
+    [KnownType(typeof(Rectangle))]
     class GameEngine
-    {
+    {   [DataMember]
         private Hero CurrentHero;
+        [NonSerialized]
         private MapInspector Inspector;
+        [NonSerialized]
         private bool GameOver = false;
+        [JsonIgnore]
         public bool GameStarted { get; private set; }
+        [DataMember]
         private Cave Map;
+        [DataMember]
         public Rectangle HeroInfoBorder { get; set; }
+        [DataMember]
         public Rectangle MapBorder { get; set; }
         public InfoBorder InfoBorder { get; set; }
         public Random GameRandom = new Random();
+
         private int ConsoleHeight = 0;
+        [DataMember]
         private int ConsoleWidth = 0;
+        [DataMember]
         private Monster TmpMonster; //make this as list
+        [DataMember]
+        public Random GameRandom = new Random();
+        public GameEngine() { }
+        public void InitFromSave(Int16 numberofsave)
+        {
+            string path = MakeCorrectPath();
+            FileStream buffer = File.OpenRead(path+$"{numberofsave}.txt");
+            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(GameEngine));
+            GameEngine tmpengine = jsonSerializer.ReadObject(buffer) as GameEngine;
+            CurrentHero = tmpengine.CurrentHero;
+            Map = tmpengine.Map;
+            buffer.Close();
+            TmpMonster = tmpengine.TmpMonster;
+            Inspector = new MapInspector("Inspector", new Point(CurrentHero.Coords.X, CurrentHero.Coords.Y));
+            GameStarted = true;
+            ConsoleHeight = tmpengine.ConsoleHeight;
+            ConsoleWidth = tmpengine.ConsoleHeight;
+        }
+        public string MakeCorrectPath()
+        {
+            string path = "";
+            if (Environment.OSVersion.ToString()[0] == 'M')
+            {
+                path = @"..\Saves\Save";
+            }
+            if (Environment.OSVersion.ToString()[0] == 'U')
+            {
+                path = @"../Saves/Save";
+            }
+            return path;
+        }
+        public void Save(Int16 numberofsavefile)
+        {
+            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(GameEngine));
+            string path = MakeCorrectPath();
+            DirectoryInfo dirInfo = new DirectoryInfo(path.Substring(0,8));
+            if (!dirInfo.Exists)
+            {
+                dirInfo.Create();
+            }
+            FileStream buffer = File.Create(path+$"{numberofsavefile}.txt");
+            jsonSerializer.WriteObject(buffer,this);
+            buffer.Close();
+        }
         public void Init()
         {
             Map = new Cave();
@@ -73,7 +133,7 @@ namespace Roguelike
         {
             Inspector.IsInspect = true;
             Inspector.Coords.SetValue(CurrentHero.Coords);
-            char symbol = CurrentHero.Symbol;
+            TileFactory factory = new TileFactory();
             TileFlyweight tile;
             while (Inspector.IsInspect)
             {
