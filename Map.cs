@@ -14,11 +14,8 @@ namespace CaveGenerator
     class Cave
     {
         private Random rnd;
-
-        [DataMember]
-        public string[] WorldAscii { get; set; }
-        public Roguelike.Tile WorldTile { get;} 
-        [DataMember]
+        public string[] WorldAscii { get; private set; }
+        public Roguelike.Tile[,] WorldTile { get; private set; }
         public Roguelike.Point Offset { get; set; }
         #region properties
 
@@ -126,11 +123,16 @@ namespace CaveGenerator
         public void WriteMapIntoFile()
         {
             int worldHeight = Map.GetLength(0);
-            int worldWidth = Map[0].GetLength(0);
+            int worldWidth = Map.GetLength(1);
+            WorldTile = new Roguelike.Tile[worldHeight, worldWidth];
             for (int x = 0; x < MapSize.Width; x++)
                 for (int y = 0; y < MapSize.Height; y++)
+                {
                     if (x == 0 || x == MapSize.Width - 1 || y == 0 || y == MapSize.Height - 1)
                         Map[x][y] = 0 ;
+                    WorldTile[x, y] = new Roguelike.Tile((Roguelike.TileFlyweight.Type)Map[x, y]);
+                }
+
             WorldAscii = new string[worldHeight];
             StringBuilder[] builder = new StringBuilder[worldHeight];
             for (var x = 0; x < worldHeight; x++)
